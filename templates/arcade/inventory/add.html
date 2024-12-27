@@ -1,0 +1,15 @@
+{% extends "arcade/base.html" %}
+<br>
+{% load crispy_forms_tags %}
+
+
+{% block main_content %}
+<div class="hup">
+    <h1>Add New Inventory Item</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-primary">Add Item</button>
+    </form>
+</div>    
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends "arcade/base.html" %}
+{% block main_content %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Manage Approvals</h1>
+<hr>
+    <!-- Pending Days Section -->
+    <div class="card mb-5">
+        <div class="card-header ">
+            <h2>Pending Days</h2>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="pendingDaysTable" class="table table-striped table-bordered">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Staff</th>
+                            <th>Start Amount</th>
+                            <th>End Amount</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for day in pending_days %}
+                        <tr>
+                            <td>{{ day.id }}</td>
+                            <td>{{ day.staff }}</td>
+                            <td>₦{{ day.start_amount }}</td>
+                            <td>₦{{ day.end_amount }}</td>
+                            <td>
+                                <a href="{% url 'approve_day' day.id %}" class="btn btn-warning btn-sm">Approve</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pending Discounts Section -->
+    <div class="card mb-5">
+        <div class="card-header text-dark">
+            <h2>Pending Discounts</h2>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table id="pendingDiscountsTable" class="table table-striped table-bordered">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>Sale ID</th>
+                            <th>Cashier</th>
+                            <th>Proposed Discount</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for discount in pending_discounts %}
+                        <tr>
+                            <td>{{ discount.sale.id }}</td>
+                            <td>{{ discount.cashier }}</td>
+                            <td>₦{{ discount.proposed_discount }}</td>
+                            <td>
+                                <a href="{% url 'approve_discount' discount.id %}" class="btn btn-warning btn-sm">Approve</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Initialize DataTables for both tables
+    $(document).ready(function () {
+        $('#pendingDaysTable').DataTable();
+        $('#pendingDiscountsTable').DataTable();
+    });
+</script>
+{% endblock %}

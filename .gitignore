@@ -1,0 +1,14 @@
+arcade/__pycache__/
+arcade/migrations/__pycache__/
+arcade/migrations/*
+!arcade/migrations/__init__.py
+
+manager/__pycache__/
+
+users/__pycache__/
+users/migrations/__pycache__/
+users/migrations/*
+!users/migrations/__init__.py
+
+db.sqlite3
+.env

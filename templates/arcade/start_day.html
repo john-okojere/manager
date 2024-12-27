@@ -1,0 +1,94 @@
+{% extends "arcade/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block main_content %}
+<style>
+    .hey, h2{
+        position: relative;
+        top: 10px;
+        left: 16px;
+        color: black;
+    }
+
+    #id_start_amount{
+        max-width:179px;
+        margin-left: 15px !important;
+        padding: 6px 5px;
+        border: 1px solid #000;
+        border-radius: 5px;
+        background-color: #f4f4f4;
+    }
+
+    input#id_start_amount{
+        margin-top: 1px !important;
+    }
+    
+    #id_start_amount p{
+        margin: 15px;  
+         
+   }
+
+   #id_start_amount p label{
+        display: block;
+        font-weight: 700 !important;
+        margin-bottom: 50px !important; 
+   }
+
+    label{
+        display: inline-block;
+        margin-bottom: 83px;
+        margin-left: 16px;
+        font-weight: 700;
+        margin-top: 50px;
+        margin-bottom: -5px;
+    }
+
+   #id_start_amount p, #id_start_amount p textarea{
+        width: 20%;
+        padding: 5px;
+        border-radius: 5px;
+        font-size: 14px;
+        font-weight: 700;
+        margin: 16px;
+        left: 16px;
+        box-sizing: border-box;
+   }
+
+   #id_start_amount p:focus{
+        border-color: black;
+        outline: none;
+        font-weight: bold;
+   }
+
+     .btn.btn-primary{
+        background-color: white !important;
+        color:black !important;
+        padding: 10px 15px;
+        border: 1px solid rgb(123, 5, 5);
+        margin: 16px;
+        left: 16px;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        margin-top: -100px !important;
+   }
+
+     .btn.btn-primary button:hover{
+        background-color: rgb(123, 5, 5) !important;
+        color: white !important;
+   }
+   
+    button.btn.btn-primary{
+        margin-bottom: -185px
+    }
+</style>
+
+<div class="hey">
+    <h2>Start Day</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-primary">Start Day</button>
+    </form>
+</div>
+{% endblock %}

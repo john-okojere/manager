@@ -1,0 +1,1110 @@
+*{
+    padding: 0
+    ;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
+}
+.container {
+    display: flex;
+    width: 90%;
+    max-width: 1200px;
+
+    background: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.left-panel, .right-panel {
+    padding: 20px;
+}
+.left-panel {
+    flex: 2;
+    border-right: 1px solid #ccc;
+}
+.transaction-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+.transaction-table th, .transaction-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+}
+.controls button {
+    margin-right: 10px;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+.totals div {
+    margin-top: 10px;
+    font-size: 16px;
+}
+.right-panel {
+    flex: 1;
+
+}
+.categories{ 
+    display: flex;
+    height: 5rem;
+    gap: 1rem;
+}
+
+.categories button{
+    height: 2.5rem;
+    margin:2px 15px;
+    margin-top: 4px;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+
+
+.payment-methods button{
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+
+}
+
+.numeric-keypad {
+    margin-top: 20px;
+}
+.numeric-keypad input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+.keys button {
+    width: 30%;
+    background-color: white;
+    border: 1px solid rgba(222, 222, 222, 0.562);
+    margin: 1%;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.keys button:hover{
+    background-color: rgb(212, 212, 212);
+}
+
+.btnActionKeys{
+    color:  rgba(146, 14, 14, 0.694) !important;
+    border: 1px solid rgba(222, 222, 222, 0.562) !important;
+    background-color: rgb(255, 255, 255)!important;
+
+}
+
+.btnActionKeys:hover{
+    background-color: rgb(156, 9, 9)!important;
+    color:white !important;
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    background: #f4f4f4;
+    padding: 10px;
+    gap: 10px; /* Adds spacing between sections */
+}
+
+.main-content{
+    /* background-color: red !important; */
+}
+
+.left-panel, .right-panel, .side-panel {
+    background: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+}
+
+.btnOpenSearchModal{
+    background-color: rgba(222, 222, 222, 0.562);
+    border:  2px solid black;
+    border-radius: 5%;
+    width: 100%;
+    margin: 10px;
+    padding: 10px;  
+    text-align: center;
+}
+
+.btnpaymentKeys{
+    border: 1px solid rgba(222, 222, 222, 0.562);
+    background-color: white;
+    color:rgba(146, 14, 14, 0.694);
+
+
+}
+
+.btnpaymentKeys:hover{
+    background-color:rgba(132, 0, 0, 0.797) ;
+    color: white;
+}
+
+/* Left Panel */
+.left-panel {
+    flex: 3; /* Larger width */
+}
+
+/* Right Panel */
+.right-panel {
+    flex: 2; /* Medium width */
+}
+
+/* Side Panel */
+.side-panel {
+    flex: 1; /* Smallest width */
+    background: #ffffff; /* Dark background for contrast */
+    color: #920e0eb1; /* Light text */
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Space between buttons */
+}
+
+.side-panel button {
+    background: #ffffff;
+    color: #920e0eb1;
+    border: 1px solid rgba(222, 222, 222, 0.562);
+    padding: 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.3s;
+}
+
+a.side-panel button{
+    color: #920e0eb1;
+    background-color: #fff;
+}
+
+.side-panel button:hover {
+    background: rgb(123, 5, 5); /* Darker on hover */
+    color: white !important;
+}
+/* General Styles for the Left Panel */
+.left-panel {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* Add space between sections */
+}
+
+/* Transaction Table Styles */
+.transaction-container {
+    flex: 1;
+    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: 300px; /* Set max height for scrollable area */
+    border: 1px solid #340000; /* Add border to define area */
+}
+
+.transaction-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.transaction-table th, .transaction-table td {
+    border: 1px solid #790303;
+    padding: 10px;
+    text-align: center;
+}
+
+.transaction-table th {
+    background: #f4f4f4;
+    font-weight: bold;
+}
+
+/* Controls Section */
+.controls {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.controls button {
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    background: #d3d3d3;
+    transition: background 0.3s;
+}
+
+.controls button:hover {
+    background: #a9a9a9;
+}
+
+/* Additional Field Section */
+.field-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.field-container input {
+    flex: 1;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.field-container button {
+    padding: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    background: #d3d3d3;
+    transition: background 0.3s;
+}
+
+.field-container button:hover {
+    background: #a9a9a9;
+}
+
+/* Totals Section */
+.totals {
+    margin-top: 10px;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    color: rgb(112, 79, 17);
+    font-weight: 500;
+    background: #f9f9f9;
+}
+#total{
+    color: red;
+
+}
+#amountPaid{
+    color: red;
+}
+#amountDue{
+    color: red;
+}
+
+.totals div {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+/* General Styles for the Left Panel */
+.left-panel {
+    flex: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 30px; /* Increase the gap between sections */
+}
+
+/* Transaction Table Styles */
+.transaction-container {
+    flex: 1;
+    overflow-y: auto; /* Enable vertical scrolling */
+    max-height: 300px; /* Set max height for scrollable area */
+    border: 1px solid #ececec; /* Keep the header border consistent */
+    position: relative;
+}
+
+.transaction-table {
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+.transaction-table thead {
+    border: 1px solid #ececec; /* Keep the header border consistent */
+
+
+}
+
+/* Table Header - Make it sticky */
+.transaction-table thead th {
+    position: sticky;
+    top: 0; /* Fix at the top */
+    background: #ffffff; /* Background color to prevent transparency */
+    z-index: 1; /* Ensure it stays above table rows */
+    border: 1px solid #ececec; /* Keep the header border consistent */
+    color: #656565;
+
+    text-align: center;
+    padding: 10px;
+}
+
+/* Table Cells */
+.transaction-table td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+}
+
+/* Controls Section */
+.controls {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.controls button {
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    background-color: #fff;
+    border: 1px solid #ececec; /* Keep the header border consistent */
+    transition: background 0.3s;
+    color: #920e0eb1;
+}
+
+.controls button:hover {
+    background-color: rgb(123, 5, 5);
+    color: #fff;
+}
+
+/* Additional Field Section */
+.field-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.field-container input {
+    flex: 1;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.field-container button {
+    padding: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+    border: none;
+    background: #d3d3d3;
+    transition: background 0.3s;
+}
+
+.field-container button:hover {
+    background: #a9a9a9;
+}
+
+/* Totals Section */
+.totals {
+    margin-top: 10px;
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    background: rgb(255, 255, 255);
+    border: 1px solid rgba(222, 222, 222, 0.562);
+    color: black;
+}
+
+.totals div {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+#quantityInput{
+    border: 1px solid rgba(222, 222, 222, 0.562);
+
+}
+/* Discount Overlay */
+.discount-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    display: none; /* Initially hidden */
+}
+.search-overlay{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.874);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    display: none;
+}
+.containerSearchOverlay{
+    border: 1px solid rgb(194, 194, 194);
+    padding: 10px;
+    background-color: rgb(255, 255, 255);
+    height: 80vh;
+    width: 50vw;
+}
+.flexSearch{
+    display: flex;
+}
+.containerFlexSearch{
+    flex: 95%;
+    margin-top: 2rem;
+}
+#SearchProduct{
+    border: 1px solid rgb(201, 201, 201);
+    padding-left: 1rem;
+    width: 20rem;
+    height: 2.5rem;
+    border-radius: 5px;
+}
+.flexClose{
+    color: red;
+    font-size: 20px;
+    flex: 5%;
+    cursor: pointer;
+}
+#SearchProduct::placeholder{
+    font-size: 12px !important;
+    color: rgb(129, 129, 129);
+
+
+}
+
+.discount-container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.discount-container h3 {
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.discount-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    text-align: left;
+}
+
+.discount-container input,
+.discount-container select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.discount-actions button {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background: #4caf50;
+    color: white;
+    transition: background 0.3s;
+}
+
+.discount-actions button:hover {
+    background: #45a049;
+}
+
+.discount-actions button:last-child {
+    background: #920e0e;
+}
+
+.discount-actions button:last-child:hover {
+    background: #e53935;
+}
+/* Refund Overlay */
+.refund-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    display: none; /* Initially hidden */
+}
+
+.refund-container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+.refund-container h3 {
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.refund-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    text-align: left;
+}
+
+.refund-container select,
+.refund-container textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.refund-actions button {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background: #f44336;
+    color: white;
+    transition: background 0.3s;
+}
+
+.refund-actions button:hover {
+    background: #e53935;
+}
+
+.refund-actions button:last-child {
+    background: #4CAF50;
+}
+
+.refund-actions button:last-child:hover {
+    background: #45a049;
+}
+/* Menu Overlay */
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9); /* Dark overlay */
+    display: none; /* Initially hidden */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Menu Container */
+.menu-container {
+    background: #333;
+    color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Close Button */
+.close-menu {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #f44336;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.close-menu:hover {
+    background: #e53935;
+}
+
+/* Menu Buttons */
+.menu-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.menu-buttons button {
+    background: #d3d3d3;
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s;
+    flex: 1;
+    max-width: 150px;
+}
+
+.menu-buttons button:hover {
+    background: #a9a9a9;
+}
+/* Menu Overlay */
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9); /* Dark overlay */
+    display: none; /* Initially hidden */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Menu Container */
+.menu-container {
+    background: #333;
+    color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    width: calc(400px + 20rem); /* Increased width */
+    height: calc(300px + 20rem); /* Increased height */
+    text-align: center;
+    position: relative;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Space out elements */
+}
+
+/* Close Button */
+.close-menu {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: #f44336;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.close-menu:hover {
+    background: #e53935;
+}
+
+/* Menu Buttons */
+.menu-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Responsive grid */
+    gap: 20px; /* Space between buttons */
+    margin-top: 30px; /* Add space above buttons */
+    align-items: center;
+    justify-items: center;
+}
+
+.menu-buttons button {
+    background: #d3d3d3;
+    color: #000;
+    border: none;
+    padding: 15px 25px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s;
+    width: 100%; /* Make buttons stretch */
+    max-width: 200px; /* Limit button size */
+}
+
+.menu-buttons button:hover {
+    background: #a9a9a9;
+}
+/* Discount Overlay */
+.discount-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* Dark background */
+    display: none; /* Initially hidden */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.discount-container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    width: 400px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+}
+
+.discount-container h3 {
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+.discount-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+    text-align: left;
+}
+
+.discount-container input,
+.discount-container select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.discount-actions button {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    background: #4CAF50;
+    color: white;
+    transition: background 0.3s;
+}
+
+.discount-actions button:hover {
+    background: #45a049;
+}
+
+.discount-actions button:last-child {
+    background: #f44336;
+}
+
+.discount-actions button:last-child:hover {
+    background: #e53935;
+}
+
+button.close-discount {
+    position: absolute;
+    top: 6px;
+    right: 10px;
+    background: #920e0eb1;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    font-size: 20px;
+    width: 31px;
+    height: 31px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button.close-discount:hover {
+    background: #e53935;
+}
+.side-panel{
+    /* justify-content: center; */
+    /* gap: 2rem; */
+}
+
+/* User Logged In Section */
+.userLoggedin {
+    margin-top: 60px;
+    padding: 10px;
+    background:white !important; /* Dark background to match the side panel */
+    color: #fff;
+    border-radius: 5px;
+    padding-bottom: 2rem;
+    text-align: center;
+    /* border: 1px solid  red; */
+    font-family: Arial, sans-serif;
+}
+
+.userLoggedin p {
+    margin: 0;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.logout-btn {
+    margin-top: 10px;
+    
+    font-size: 14px;
+    color: #acacac;
+    background: rgb(255, 254, 254) !important;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.logout-btn:hover {
+    background: rgb(124, 0, 0) !important;
+    color: white !important;
+}
+
+.bb1{
+    background-color: rgba(153, 110, 0, 0.788);
+    border: none;
+    border-radius:4px;
+    color: white;
+}
+.bb2{
+    background-color: white;
+    border: 1px solid rgba(222, 222, 222, 0.562);
+    border-radius:4px;
+    color: ;
+}
+.bb3{
+    background-color: rgba(12, 107, 131, 0.788);
+    border: none;
+    border-radius:4px;
+    color: white;
+}
+
+.containerLogin{
+    /* display: none; */
+    /* border: 1px solid red; */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+.subContainer{
+    /* border: 1px solid blue; */
+    width: 70vw;
+    height: 100vh;
+    display: flex;
+}
+.containerLoginImage{
+    /* border: 1px solid red; */
+    flex: 50%;
+    
+}
+.containerLoginImage img{
+    height: 100%;
+    /* width: 100%; */
+}
+.containerForm{
+    flex: 80%;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    /* padding-left: 8rem; */
+    /* border: 1px solid blue; */
+    align-items: center;
+    justify-content: center;
+    
+   
+}
+.containerForm h1 {
+    /* padding-left: 1rem;
+     */
+     padding: 0;
+     margin-top: -4rem;
+     margin-bottom: 1rem;
+     justify-content: start;
+     text-align: start;
+
+     padding-bottom: 1rem;
+}
+.containerInput{
+    /* border: 1px solid red; */
+    display: flex;
+    
+}
+.formStyle{
+    height: 2.9rem;
+    border: none;
+    border-radius: 5px;
+    outline: none;
+    padding-left: 1rem;
+    border: 1px solid rgb(206, 206, 206);
+    width: 15rem;
+    margin-bottom: 1.7rem;
+}
+.BtnSubmitLogin{
+    height: 3.4rem;
+    background-color: #584c05;
+    color: white;
+    border: none;
+    padding: 1rem;
+    width:16rem;
+    border-radius: 5px;
+}
+
+#tableBody{
+    /* background-color: red; */
+    /* border: 1px solid blue; */
+}
+.containerSearchItem{margin-top: 3rem;}
+.TableRowcosmetic{
+    color: rgb(31, 31, 31);
+}
+.tablecolum1{
+    background-color: black;
+}
+.tablecolum2{
+    background-color: #45a049;
+}
+/* General table styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: Arial, sans-serif;
+    margin: 10px 0;
+    background-color: #f9f9f9;
+}
+
+th, td {
+    padding: 20px;
+    text-align: left;
+    border: 1px solid #9d9d9d;
+}
+
+/* Styling for alternating row colors */
+tr:nth-child(odd) {
+    background-color: #ffffff;
+}
+
+/* tr:hover {
+    background-color: #ddd;
+} */
+
+/* Styling for specific columns */
+.tablecolum1 {
+    background-color: #ffffff; /* Light lavender */
+    color: #333; /* Dark text */
+    font-weight: light;
+}
+
+.tablecolum2 {
+    background-color: #ffffff; /* Light blue */
+    color: #272728; /* Blue text */
+}
+
+/* Styling for the button */
+
+.AddTOCartBtnSearch{
+    border: 1px solid red;
+    height:2rem;
+    background-color: white;
+    border-radius: 3px;
+    width: 7rem;
+}
+.AddTOCartBtnSearch:hover{
+    background-color: #790303;
+    color: white;
+    border: none;
+}
+.nameItemSalon{
+    /* border:1px solid #c70606 ; */
+    border: none;
+    text-decoration: underline;
+    cursor: pointer;
+    padding:3px;
+    color: rgb(41, 41, 41);
+}
+.nameItemSalon:hover{
+    color:#790303; ;
+}
+
+#menuItemsContainer{
+    border: 1px solid  #cccc;
+
+}
+.btnSalon{
+    border: 1px solid  #cccc;
+
+
+}
+
+::-webkit-scrollbar-thumb {
+    background:#6b6b6b; /* Handle color */
+    border-radius: 6px;
+    width:1px;
+}
+/* Style for the active tab */
+
+.active-tab {
+    background-color: #b50707d4 !important; /* Blue background for active tab */
+    color: white; /* White text */
+    border-radius: 5px; /* Optional: Rounded corners */
+   
+}
+.btnSalon:hover{
+    background-color: #790303;
+    color: white;
+    
+}
+.btnpaysalonpay{
+    border: 1px solid #cccc;
+}
+
+.btnpaysalonpay:hover{
+    background-color: rgb(135, 0, 0) !important;
+    color: white !important ;
+}
+
+.reciptStyle h2{
+    font-size: 1rem !important;
+    padding-bottom: 0;
+    padding-top: 0;
+
+
+
+
+}
+
+#reciptStyle{
+    border: 1px solid red;
+    padding: 0;
+}
+#reciptStyle h2{
+    margin-top: 8px;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+#reciptStyle p{
+    padding: 0;
+    font-size: 12px;
+
+    margin: 0;
+    line-height: 1.2rem;
+}

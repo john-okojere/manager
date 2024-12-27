@@ -1,0 +1,234 @@
+{% extends "arcade/base.html" %}
+
+{% block main_content %}
+<!-- DataTables CSS -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- DataTables JS -->
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+    }
+
+    .main-content {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin: 20px auto;
+        max-width: 1200px;
+    }
+
+    .section-title {
+        font-size: 24px;
+        margin-bottom: 20px;
+        color: #333;
+        border-bottom: 2px solid #f5f5f5;
+        padding-bottom: 5px;
+    }
+
+    .summary-table, .dataTables_wrapper {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .summary-table {
+        border-collapse: collapse;
+        border-spacing: 0;
+        margin-top: 15px;
+    }
+
+    .summary-table th, .summary-table td {
+        padding: 10px 15px;
+        text-align: left;
+        border: 1px solid #ddd;
+    }
+
+    .summary-table th {
+        background-color: #f5f5f5;
+    }
+
+    .highlight {
+        font-weight: bold;
+        color: #555;
+    }
+
+    .table-container {
+        margin-top: 20px;
+    }
+
+    .exportBtn {
+        background-color: white;
+        border: 1px solid rgb(123, 5, 5) !important;
+        color: black;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s ease;
+        margin-top: 15px;
+        display: inline-block;
+    }
+
+    .exportBtn:hover {
+        background-color: rgb(123, 5, 5);
+        color: white;
+    }
+</style>
+
+<div class="main-content">
+    <h2 class="section-title">End of Day Sales Report</h2>
+
+    <!-- Summary Section -->
+    <div>
+        <h3 class="section-title">Summary</h3>
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Starting Cash</td>
+                    <td class="highlight">₦{{ day.start_amount }}</td>
+                </tr>
+                <tr>
+                    <td>Total Sales</td>
+                    <td class="highlight">₦{{ total_sales }}</td>
+                </tr>
+                <tr>
+                    <td>Completed Sales</td>
+                    <td>{{ total_completed_sales }}</td>
+                </tr>
+                <tr>
+                    <td>Pending Sales</td>
+                    <td>{{ total_pending_sales }}</td>
+                </tr>
+                <tr>
+                    <td>Total Cash Payments</td>
+                    <td>₦{{ total_cash_payments }}</td>
+                </tr>
+                <tr>
+                    <td>Total Card Payments</td>
+                    <td>₦{{ total_card_payments }}</td>
+                </tr>
+                <tr>
+                    <td>Total Cash Received</td>
+                    <td>₦{{ total_cash_received }}</td>
+                </tr>
+                <tr>
+                    <td>Total Change Given</td>
+                    <td>₦{{ total_change_given }}</td>
+                </tr>
+                <tr>
+                    <td>Expected Cash at Hand</td>
+                    <td class="highlight">₦{{ expected_cash_at_hand }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Discounts Section -->
+    <div>
+        <h3 class="section-title">Discounts</h3>
+        <table class="summary-table">
+            <thead>
+                <tr>
+                    <th>Description</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Total Discounts Proposed</td>
+                    <td>₦{{ total_sale_discounts }}</td>
+                </tr>
+                <tr>
+                    <td>Total Discounts Approved</td>
+                    <td>₦{{ total_approved_discounts }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Inventory Impact Section -->
+    <div class="table-container">
+        <h3 class="section-title">Inventory Impact</h3>
+        <table id="inventoryTable" class="display">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Total Quantity Sold</th>
+                    <th>Total Revenue</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in inventory_impact %}
+                <tr>
+                    <td>{{ item.product__name }}</td>
+                    <td>{{ item.total_quantity }}</td>
+                    <td>₦{{ item.total_revenue }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Actions Section -->
+    <div class="actions">
+        {% if day.end %}
+            <button class="exportBtn">Export to CSV</button>
+        {% else %}
+            <a href="{% url 'end_day' %}" class="exportBtn">End Day</a>          
+        {% endif %}
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    $(document).ready(function() {
+        // Initialize DataTables
+        $('#inventoryTable').DataTable({
+            responsive: true,
+            paging: true,
+            searching: true,
+            ordering: true,
+            info: true,
+            lengthChange: true,
+            language: {
+                search: "Filter:",
+                lengthMenu: "Display _MENU_ records per page",
+                info: "Showing _START_ to _END_ of _TOTAL_ records"
+            }
+        });
+
+        // End Day Button AJAX Handler
+        $('#endDayBtn').on('click', function() {
+            $.ajax({
+                url: "{% url 'end_day' %}",
+                method: 'POST',
+                data: {
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    if (response.status === 'success') {
+                        alert(response.message);
+                        location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function() {
+                    alert('Failed to end the day.');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

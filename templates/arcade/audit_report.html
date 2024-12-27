@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .section-title, h2{
+        color: black;
+        margin-bottom: 15px;
+        margin-left: 20px;
+    }
+
+    h3{
+        color: black;
+        margin-top: 20px;
+        margin-left: 20px;
+    }
+
+    table.summary-table{
+        margin-left: 20px;
+    }
+
+    table.inventory-table{
+        margin-left: 20px;
+        word-spacing: 20px;
+    }
+</style>
+<div class="main-content">
+    <h2 class="section-title">Comprehensive End-of-Day Report</h2>
+
+    <!-- Sales Overview -->
+    <section>
+        <h3>Sales Overview</h3>
+        <table class="summary-table">
+            <tr>
+                <th>Total Sales</th>
+                <td>₦{{ total_sales }}</td>
+            </tr>
+            <tr>
+                <th>Completed Sales</th>
+                <td>{{ total_completed_sales }}</td>
+            </tr>
+            <tr>
+                <th>Pending Sales</th>
+                <td>{{ total_pending_sales }}</td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- Cash Flow Summary -->
+    <section>
+        <h3>Cash Flow Summary</h3>
+        <table class="summary-table">
+            <tr>
+                <th>Starting Cash</th>
+                <td>₦{{ day.start_amount }}</td>
+            </tr>
+            <tr>
+                <th>Total Cash Received</th>
+                <td>₦{{ total_cash_received }}</td>
+            </tr>
+            <tr>
+                <th>Total Change Given</th>
+                <td>₦{{ total_change_given }}</td>
+            </tr>
+            <tr>
+                <th>Expected Cash at Hand</th>
+                <td>₦{{ expected_cash_at_hand }}</td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- Payment Breakdown -->
+    <section>
+        <h3>Payment Breakdown</h3>
+        <table class="summary-table">
+            <tr>
+                <th>Cash Payments</th>
+                <td>₦{{ total_cash_payments }}</td>
+            </tr>
+            <tr>
+                <th>Card Payments</th>
+                <td>₦{{ total_card_payments }}</td>
+            </tr>
+            <tr>
+                <th>Transfer Payments</th>
+                <td>₦{{ total_transfer_payments }}</td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- Discounts -->
+    <section>
+        <h3>Discounts</h3>
+        <table class="summary-table">
+            <tr>
+                <th>Proposed Discounts</th>
+                <td>₦{{ total_proposed_discounts }}</td>
+            </tr>
+            <tr>
+                <th>Approved Discounts</th>
+                <td>₦{{ total_approved_discounts }}</td>
+            </tr>
+        </table>
+    </section>
+
+    <!-- Inventory Impact -->
+    <section>
+        <h3>Inventory Impact</h3>
+        <table class="inventory-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity Sold</th>
+                    <th>Revenue</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in inventory_impact %}
+                <tr>
+                    <td>{{ item.product__name }}</td>
+                    <td>{{ item.total_quantity }}</td>
+                    <td>₦{{ item.total_revenue }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+
+    <!-- Profit Analysis -->
+    <section>
+        <h3>Profit Analysis</h3>
+        <table class="summary-table">
+            <tr>
+                <th>Total Revenue</th>
+                <td>₦{{ total_revenue }}</td>
+            </tr>
+            <tr>
+                <th>Total Cost</th>
+                <td>₦{{ total_cost }}</td>
+            </tr>
+            <tr>
+                <th>Gross Profit</th>
+                <td>₦{{ gross_profit }}</td>
+            </tr>
+            <tr>
+                <th>Profit Margin</th>
+                <td>{{ profit_margin|floatformat:2 }}%</td>
+            </tr>
+        </table>
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Authentication</title>
+    <link rel="stylesheet" href="style2.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Face Authentication</h1>
+        <p>Please position your face in front of the camera to authenticate.</p>
+        <video id="video" autoplay muted></video>
+        <canvas id="overlay"></canvas>
+        <button id="start-btn">Start Authentication</button>
+        <p id="status">Status: Not Started</p>
+    </div>
+    <script src="script2.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api"></script>
+</body>
+</html>

@@ -1,0 +1,540 @@
+{% extends "arcade/base.html" %}
+{% block main_content %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script>
+<script>
+    window.jsPDF = window.jspdf.jsPDF;
+</script>
+
+<style>
+    button.btn.btn-primary {
+        margin-bottom: 0px;
+    }
+</style>
+<div class="container mt-5">
+    <div style="display: flex;justify-content: space-between;flex-wrap: wrap;gap: 2rem;">
+
+    <h1 class="text-center">Comprehensive Sales Report</h1>
+    <div class="text-center mb-4">
+        <button id="exportPdf" class="btn " style="background-color: #de3629a6;">Export to PDF</button>
+        <button id="exportExcel" class="btn" style="background-color: #4bc0c0;">Export to Excel</button>
+        <!-- <button id="exportDoc" class="btn ">Export to Doc</button> -->
+    </div>
+</div>
+
+    <script>
+
+        var content = document.getElementsByClassName('main-content')[0];
+            document.getElementById('exportPdf').addEventListener('click', function () {
+            var opt = {
+                margin:       1,
+                filename:     'Sales_Report.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2 },
+                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            html2canvas(content).then(function(canvas) {
+                var imgData = canvas.toDataURL('image/png');
+                var pdf = new jsPDF('p', 'mm', 'a4');
+                var imgWidth = 210;
+                var pageHeight = 295;
+                var imgHeight = canvas.height * imgWidth / canvas.width;
+                var heightLeft = imgHeight;
+                var position = 0;
+
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+
+                while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                }
+                pdf.save('Sales_Report.pdf');
+            });
+        });
+
+        document.getElementById('exportExcel').addEventListener('click', function () {
+        function exportTableToExcel(tableID, filename = '') {
+            var downloadLink;
+            var dataType = 'application/vnd.ms-excel';
+            var tableSelect = document.getElementById(tableID);
+            var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+
+            // Specify file name
+            filename = filename ? filename + '.xls' : 'excel_data.xls';
+
+            // Create download link element
+            downloadLink = document.createElement("a");
+
+            document.body.appendChild(downloadLink);
+
+            if (navigator.msSaveOrOpenBlob) {
+                var blob = new Blob(['\ufeff', tableHTML], {
+                    type: dataType
+                });
+                navigator.msSaveOrOpenBlob(blob, filename);
+            } else {
+                // Create a link to the file
+                downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+
+                // Setting the file name
+                downloadLink.download = filename;
+
+                //triggering the function
+                downloadLink.click();
+            }
+        }
+
+        document.getElementById('exportExcel').addEventListener('click', function () {
+            exportTableToExcel('salesPerformanceTable', 'Sales_Performance_Report');
+        });
+        });
+
+        document.getElementById('exportDoc').addEventListener('click', function () {
+            // Logic to export the report to Doc
+            window.location.href = '/arcade/export/doc/';
+        });
+    </script>
+    <hr>
+
+    <!-- Summary Section -->
+    <div class="row mb-5">
+        <div class="col-md-3">
+            <div class="card text-white" style="background-color: #de3629a6;">
+                <div class="card-body text-center">
+                    <h5>Total Sales</h5>
+                    <h2 id="totalSales">{{total_sales}}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white" style="background-color: #4bc0c0;">
+                <div class="card-body text-center">
+                    <h5>Total Payments</h5>
+                    <h2 id="totalPayments">₦{{total_payments}}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card  text-white"style="background-color:#ff9f40;">
+                <div class="card-body text-center">
+                    <h5>Pending Discounts</h5>
+                    <h2 id="pendingDiscounts">₦{{pending_discounts}}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white" style="background-color: #ff6384;">
+                <div class="card-body text-center">
+                    <h5>Approved Discounts</h5>
+                    <h2 id="approvedDiscounts">₦{{total_discounts}}</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Graph Section -->
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Monthly Sales Growth</h3>
+            <canvas id="monthlySalesChart"></canvas>
+        </div>
+        <div class="col-md-6">
+            <h3>Weekly Sales Growth</h3>
+            <canvas id="weeklySalesChart"></canvas>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h3>Daily Sales Growth</h3>
+            <canvas id="dailySalesChart"></canvas>
+        </div>
+        <div class="col-md-6">
+            <h3>Sales Rate Per Inventory</h3>
+            <canvas id="inventoryRateChart"></canvas>
+        </div>
+    </div>
+<br>
+<div style="page-break-before: always;"></div>
+    <!-- Detailed Reports Section -->
+    <div class="mt-5">
+        <h2>Detailed Reports</h2>
+        <hr>
+        <div class="table-responsive">
+            <h3>Sales Performance</h3>
+          
+            <table id="salesPerformanceTable" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Staff</th>
+                        <th>Total Sales</th>
+                        <th>Number of Sales</th>
+                        <th>Average Sale Value</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <div class="row mt-4">
+                <div class="col-md-6">
+                    <h3> Total Sales by Staff (Graph)</h3>
+                    <canvas id="staffPerformanceGraph"></canvas>
+                </div>
+                <div class="col-md-6">
+                    <h3>Sales Count by Staff (Bar Chart)</h3>
+                    <canvas id="staffPerformanceBarChart"></canvas>
+                </div>
+            </div>
+            
+        </div>
+        <hr>
+        <div class="table-responsive">
+            <h3>Top Products</h3>
+            <table id="topProductsTable" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Total Revenue</th>
+                        <th>Units Sold</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-6">
+            <h3>Top Products Performance (Graph)</h3>
+            <canvas id="topProductsGraph"></canvas>
+            </div>
+            <div class="col-md-6">
+            <h3>Top Products Performance (Bar Chart)</h3>
+            <canvas id="topProductsBarChart"></canvas>
+            </div>
+            
+        <hr>
+<div style="page-break-before: always;"></div>
+
+        <div class="table-responsive">
+            <h3>Payment Summary</h3>
+            <table id="paymentSummaryTable" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Payment Type</th>
+                        <th>Total Amount</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div class="row mt-4">
+            <div class="col-md-12" style="height: 500px;justify-items: center;">
+                <h3>Payment Summary (Graph)</h3>
+                <br>
+                <canvas id="paymentSummaryGraph"></canvas>
+            </div>
+        </div>
+        </div>
+</div>
+<br>
+<!-- Chart.js and DataTables Integration -->
+<script>
+    // Fetch Report Data
+    function fetchReportData() {
+        $.ajax({
+            url: '/arcade/api/sales-growth/',
+            method: 'GET',
+            success: function (data) {
+                if (!data.monthly_data || !data.weekly_data || !data.daily_data || !data.inventory_data) {
+                    console.error("Incomplete data received for sales growth:", data);
+                    return;
+                }
+                populateCharts(data);
+            },
+            error: function (error) {
+                console.error("Failed to fetch sales growth data:", error);
+            }
+        });
+
+        $.ajax({
+            url: '/arcade/api/sales-performance/',
+            method: 'GET',
+            success: function (data) {
+                if (!data.sales_performance || !data.top_products || !data.payment_summary) {
+                    console.error("Incomplete data received for sales performance:", data);
+                    return;
+                }
+                populateSalesPerformance(data.sales_performance);
+                populateTopProducts(data.top_products);
+                populatePaymentSummary(data.payment_summary);
+                populateStaffPerformanceCharts(data.sales_performance); // Populate the new charts
+                topProductsGraph(data.top_products);
+                topProductsBarChart(data.top_products);
+                populatePaymentSummaryGraph(data.payment_summary);
+            },
+            error: function (error) {
+                console.error("Failed to fetch sales performance data:", error);
+            }
+        });
+    }
+
+    // Populate Charts
+    function populateCharts(data) {
+        // Monthly Sales Growth
+        const monthlySalesChart = new Chart(document.getElementById('monthlySalesChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: data.monthly_data.map(entry => entry.month),
+                datasets: [{
+                    label: 'Sales (₦)',
+                    data: data.monthly_data.map(entry => entry.total_sales),
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true,
+                }]
+            }
+        });
+
+        // Weekly Sales Growth
+        const weeklySalesChart = new Chart(document.getElementById('weeklySalesChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: data.weekly_data.map(entry => entry.week),
+                datasets: [{
+                    label: 'Sales (₦)',
+                    data: data.weekly_data.map(entry => entry.total_sales),
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    fill: true,
+                }]
+            }
+        });
+
+        // Daily Sales Growth
+        const dailySalesChart = new Chart(document.getElementById('dailySalesChart').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: data.daily_data.map(entry => entry.day),
+                datasets: [{
+                    label: 'Sales (₦)',
+                    data: data.daily_data.map(entry => entry.total_sales),
+                    borderColor: 'rgba(255, 159, 64, 1)',
+                    backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                    fill: true,
+                }]
+            }
+        });
+
+        // Inventory Sales Rate
+        const inventoryRateChart = new Chart(document.getElementById('inventoryRateChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: data.inventory_data.map(entry => entry.product__name),
+                datasets: [{
+                    label: 'Units Sold',
+                    data: data.inventory_data.map(entry => entry.total_sold),
+                    backgroundColor: 'rgba(153, 102, 255, 0.6)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 1
+                }]
+            }
+        });
+    }
+
+    // Populate Tables
+    function populateSalesPerformance(data) {
+        const table = $('#salesPerformanceTable').DataTable();
+        table.clear();
+        data.forEach(entry => {
+            table.row.add([
+                entry.cashier__username,
+                `₦${entry.total_sales}`,
+                entry.sales_count,
+                `₦${entry.avg_sale_value}`
+            ]);
+        });
+        table.draw();
+    }
+
+    function populateTopProducts(data) {
+        const table = $('#topProductsTable').DataTable();
+        table.clear();
+        data.forEach(entry => {
+            table.row.add([
+                entry.product__name,
+                `₦${entry.total_revenue}`,
+                entry.units_sold
+            ]);
+        });
+        table.draw();
+    }
+
+    function populatePaymentSummary(data) {
+        const table = $('#paymentSummaryTable').DataTable();
+        table.clear();
+        data.forEach(entry => {
+            table.row.add([
+                entry.payment_type,
+                `₦${entry.total_amount}`
+            ]);
+        });
+        table.draw();
+    }
+
+    // Initialize DataTables and Fetch Data
+    $(document).ready(function () {
+        $('#salesPerformanceTable').DataTable();
+        $('#topProductsTable').DataTable();
+        $('#paymentSummaryTable').DataTable();
+        fetchReportData();
+    });
+    function populateStaffPerformanceCharts(data) {
+        // Sales Performance by Staff (Graph)
+        const staffPerformanceGraph = new Chart(document.getElementById('staffPerformanceGraph').getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: data.map(entry => entry.cashier__username),
+                datasets: [{
+                    label: 'Total Sales (₦)',
+                    data: data.map(entry => entry.total_sales),
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true,
+                }]
+            }
+        });
+
+        // Sales Performance by Staff (Bar Chart)
+        const staffPerformanceBarChart = new Chart(document.getElementById('staffPerformanceBarChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: data.map(entry => entry.cashier__username),
+                datasets: [{
+                    label: 'Total Sales (₦)',
+                    data: data.map(entry => entry.sales_count),
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            }
+        });
+    }
+
+    function topProductsGraph(data) {
+    // Ensure data exists and is properly formatted
+    if (!data || data.length === 0) {
+        console.error("No data available for Top Products Graph");
+        return;
+    }
+
+    // Top Products Performance (Line Chart)
+    new Chart(document.getElementById('topProductsGraph').getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: data.map(entry => entry.product__name), // Extract product names
+            datasets: [{
+                label: 'Total Revenue (₦)',
+                data: data.map(entry => parseFloat(entry.total_revenue)), // Extract total revenue
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                fill: true,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                tooltip: { enabled: true },
+            },
+            scales: {
+                x: { title: { display: true, text: 'Products' } },
+                y: { title: { display: true, text: 'Revenue (₦)' }, beginAtZero: true }
+            }
+        }
+    });
+}
+
+function topProductsBarChart(data) {
+    // Ensure data exists and is properly formatted
+    if (!data || data.length === 0) {
+        console.error("No data available for Top Products Bar Chart");
+        return;
+    }
+
+    // Top Products Performance (Bar Chart)
+    new Chart(document.getElementById('topProductsBarChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: data.map(entry => entry.product__name), // Extract product names
+            datasets: [{
+                label: 'Units Sold',
+                data: data.map(entry => parseInt(entry.units_sold)), // Extract units sold
+                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'top' },
+                tooltip: { enabled: true },
+            },
+            scales: {
+                x: { title: { display: true, text: 'Products' } },
+                y: { title: { display: true, text: 'Units Sold' }, beginAtZero: true }
+            }
+        }
+    });
+}
+function populatePaymentSummaryGraph(data) {
+                // Ensure data exists and is properly formatted
+                if (!data || data.length === 0) {
+                    console.error("No data available for Payment Summary Graph");
+                    return;
+                }
+
+                // Payment Summary (Pie Chart)
+                new Chart(document.getElementById('paymentSummaryGraph').getContext('2d'), {
+                    type: 'pie',
+                    data: {
+                        labels: data.map(entry => entry.payment_type), // Extract payment types
+                        datasets: [{
+                            label: 'Total Amount (₦)',
+                            data: data.map(entry => parseFloat(entry.total_amount)), // Extract total amounts
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.6)',
+                                'rgba(54, 162, 235, 0.6)',
+                                'rgba(255, 206, 86, 0.6)',
+                                'rgba(75, 192, 192, 0.6)',
+                                'rgba(153, 102, 255, 0.6)',
+                                'rgba(255, 159, 64, 0.6)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'top' },
+                            tooltip: { enabled: true },
+                        }
+                    }
+                });
+            }
+</script>
+{% endblock %}
