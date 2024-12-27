@@ -11,8 +11,12 @@ def login_user(request):
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            login(request, user)
-            return redirect('face-auth')  # Redirect to the dashboard
+            if user.role == "Manager":
+                login(request, user)
+                return redirect('face-auth')  # Redirect to the dashboard
+            else:
+                logout(request, user)
+                return render(request, 'users/signin-2.html', {'error': 'You are not a Manager'})
         else:
             return render(request, 'users/signin-2.html', {'error': 'Invalid credentials'})
     return render(request, 'users/signin-2.html')
