@@ -39,13 +39,13 @@ def profile(request):
         form = UserUpdateForm(instance=user)
     return render(request, 'profile.html', {'form': form})
 
-import cv2
-import numpy as np
-import face_recognition
-from django.http import JsonResponse
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
-import base64
+# import cv2
+# import numpy as np
+# import face_recognition
+# from django.http import JsonResponse
+# from django.shortcuts import render
+# from django.contrib.auth.decorators import login_required
+# import base64
 
 @login_required
 def face_auth(request):
