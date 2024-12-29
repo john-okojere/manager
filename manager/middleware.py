@@ -12,7 +12,6 @@ class RoleBasedLogoutMiddleware(MiddlewareMixin):
                 return redirect('login')
         return None
 
-
 class Redirect404Middleware(MiddlewareMixin):
     def process_response(self, request, response):
         # Apply only if the user is authenticated
