@@ -1,0 +1,232 @@
+{% extends "resturant/base.html" %}
+
+{% block main_content %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="container">
+    <div class="container">
+        <br>
+        <h2>Sales Summary</h2>
+        <br>
+        {% if user.level >= 3 %}
+        <!-- Filter Section -->
+        <div class="filters">
+            <label for="cashierFilter">Cashier:</label>
+            <select id="cashierFilter" class="filter">
+                <option value="">All</option>
+                <!-- Dynamically populate cashier options via JavaScript -->
+            </select>
+
+            <label for="statusFilter">Status:</label>
+            <select id="statusFilter" class="filter">
+                <option value="">All</option>
+                <option value="completed">Completed</option>
+                <option value="pending">Pending</option>
+            </select>
+
+            <label for="paidFilter">Paid:</label>
+            <select id="paidFilter" class="filter">
+                <option value="">All</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+            </select>
+
+            <label for="dateRange">Date Range:</label>
+            <input type="date" id="startDate" class="filter">
+            <input type="date" id="endDate" class="filter">
+        </div>
+        {% endif %}
+        <hr>
+        <!-- Chart -->
+        <canvas id="salesChart" width="400" height="200"></canvas>
+    </div>
+
+    <hr>
+
+    <div class="container">
+        <h1>Sales History</h1>
+        <!-- Data Table -->
+        <table id="salesTable" class="display" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Sale ID</th>
+                    <th>Cashier</th>
+                    <th>Completed</th>
+                    <th>Total (₦)</th>
+                    <th>Paid</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be populated by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    let salesData = [];
+    let salesChart;
+
+    // Fetch Sales Data and Populate Table
+    function fetchSalesHistory() {
+        $.ajax({
+            url: '/resturant/sales-history/',
+            method: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                salesData = data.sales || [];
+                populateCashierFilter();
+                updateDataTable(salesData);
+                updateSalesChart(salesData);
+            },
+            error: function() {
+                alert('Failed to load sales history.');
+            }
+        });
+    }
+
+    // Populate Cashier Filter Dropdown
+    function populateCashierFilter() {
+        const cashiers = [...new Set(salesData.map(sale => sale.cashier))];
+        const cashierFilter = $('#cashierFilter');
+        cashierFilter.empty();
+        cashierFilter.append('<option value="">All</option>');
+        cashiers.forEach(cashier => {
+            cashierFilter.append(`<option value="${cashier}">${cashier}</option>`);
+        });
+    }
+
+    // Update DataTable
+    function updateDataTable(filteredData) {
+        const table = $('#salesTable').DataTable();
+        table.clear();
+
+        filteredData.forEach(sale => {
+            const printButton = `<button class="btn btn-primary btn-sm" onclick="printReceipt(${sale.id})">Print Receipt</button>`;
+            table.row.add([
+                sale.id,
+                sale.cashier,
+                sale.completed ? 'Yes' : 'No',
+                `₦${parseFloat(sale.total).toFixed(2)}`,
+                sale.paid ? 'Yes' : 'No',
+                new Date(sale.date).toLocaleString(),
+                printButton
+            ]);
+        });
+
+        table.draw();
+    }
+
+    // Print Receipt
+    function printReceipt(saleId) {
+        $.ajax({
+            url: `/resturant/sale/receipt/${saleId}/`,
+            method: 'GET',
+            success: function(data) {
+                const receiptWindow = window.open("", "Receipt", "width=400,height=600");
+                const receiptContent = `
+                    <html>
+                    <head>
+                        <style>
+                            body { font-family: Arial, sans-serif; }
+                            h2 { text-align: center; margin-bottom: 10px; }
+                            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                            th, td { padding: 8px; text-align: left; border: 1px solid #ddd; }
+                            th { background-color: #f2f2f2; }
+                        </style>
+                    </head>
+                    <body>
+                        <h2>Eleganté Resturant Receipt</h2>
+                        <p>Receipt #${saleId}</p>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Quantity</th>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${data.items.map(item => `
+                                    <tr>
+                                        <td>${item.quantity}</td>
+                                        <td>${item.product}</td>
+                                        <td>₦${parseFloat(item.price).toFixed(2)}</td>
+                                        <td>₦${parseFloat(item.total).toFixed(2)}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                        <h3>Total: ₦${parseFloat(data.total).toFixed(2)}</h3>
+                    </body>
+                    </html>
+                `;
+                receiptWindow.document.write(receiptContent);
+                receiptWindow.document.close();
+                receiptWindow.print();
+            },
+            error: function() {
+                alert('Failed to fetch receipt details.');
+            }
+        });
+    }
+
+    // Update Sales Chart
+    function updateSalesChart(data) {
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        if (salesChart) salesChart.destroy();
+        salesChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.map(sale => new Date(sale.date).toLocaleDateString()),
+                datasets: [{
+                    label: 'Sales (₦)',
+                    data: data.map(sale => parseFloat(sale.total)),
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    fill: true
+                }]
+            }
+        });
+    }
+
+    // Filter Sales Data
+    function filterSalesData() {
+        const cashierFilter = $('#cashierFilter').val();
+        const statusFilter = $('#statusFilter').val();
+        const paidFilter = $('#paidFilter').val();
+        const startDate = new Date($('#startDate').val());
+        const endDate = new Date($('#endDate').val());
+
+        const filteredData = salesData.filter(sale => {
+            const matchesCashier = !cashierFilter || sale.cashier === cashierFilter;
+            const matchesStatus = !statusFilter || 
+                (statusFilter === 'completed' && sale.completed) || 
+                (statusFilter === 'pending' && !sale.completed);
+            const matchesPaid = !paidFilter || 
+                (paidFilter === 'yes' && sale.paid) || 
+                (paidFilter === 'no' && !sale.paid);
+            const matchesDateRange = (!startDate || new Date(sale.date) >= startDate) && 
+                (!endDate || new Date(sale.date) <= endDate);
+
+            return matchesCashier && matchesStatus && matchesPaid && matchesDateRange;
+        });
+
+        updateDataTable(filteredData);
+        updateSalesChart(filteredData);
+    }
+
+    $(document).ready(function() {
+        $('#salesTable').DataTable();
+        fetchSalesHistory();
+        $('.filter').on('change', filterSalesData);
+    });
+</script>
+<br>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "resturant/base.html" %}
+{% load crispy_forms_tags %}
+
+{% block main_content %}
+<style>
+    .btn btn-primary{
+        background-color: white;
+        border: 1px solid rgb(123, 5, 5) !important;
+        color: black;
+        padding: 10px 20px;
+        border-radius: 2px;
+        text-decoration: none;
+        display: inline-block;
+        cursor: pointer;
+        font-size: 16px;
+        margin-right: 10px;
+        transition: backround-color 0.3s ease;
+    }
+
+    .btn-primary:hover{
+        background-color: blue !important;
+        color: white;
+    }
+
+    button.btn btn-primary{
+        border-color: rgb(123, 5, 5);
+    }
+
+    .hey, h2{
+        position: relative;
+        top: 10px;
+        left: 8px;
+        color: black;
+    }
+
+</style>
+
+<div class="hey">
+    <h2>Start Day</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <button type="submit" class="btn btn-primary">Start Day</button>
+    </form>
+</div>
+{% endblock %}

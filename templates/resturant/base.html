@@ -1,0 +1,127 @@
+
+
+
+
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .container.mt-4{
+        margin: auto;
+        margin-top: 0 !important;
+    }
+.container-with-sidebar {
+    display: flex;
+    min-height: 80vh;
+}
+
+
+
+
+
+
+
+
+
+/* Sidebar styles */
+.sidebar {
+    color:black !important ;
+    padding: 1em;
+    overflow-y: auto;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-menu li {
+    margin: 1em 0;
+}
+
+.sidebar-menu a {
+    color: #5B6670;
+    text-decoration: none;
+    display: block;
+    padding: 0.5em 1em;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.sidebar-menu a:hover {
+    color: #d02222;
+}
+
+body{
+    /* overflow: hidden; */
+}
+
+
+/* Main content area */
+.main-content {
+    flex-grow: 1;
+    background-color: #f4f4f4;
+    min-height: 85%;
+}
+div.dataTables_wrapper div.dataTables_info {
+    padding-top: 68px !important;
+}
+</style>
+<div class="sidebar">
+    <div class="logo">Logo</div>
+    <ul class="menu">
+      <li><a href="#" class="menu-option" data-view="home">Home</a></li>
+      <li><a href="#" class="menu-option" data-view="settings">OrdersHistory</a></li>
+    </ul>
+    <div class="EndOfday">
+     <button class="BtnMainOpenEndDAy">End Of Day</button> 
+    </div>
+  </div>
+
+<div class="container-with-sidebar" style="display: flex;">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <ul class="sidebar-menu">
+            <li>
+                <h3>Restaurant</h3>
+            </li>
+            {% if user.role == "Waiter" %}
+            <li><a href="{% url 'resturant_waiter' %}"><i data-feather="user" style="width:18px; height:18px ;margin-right:10px"></i>Waiter</a></li>
+            {% endif %}
+
+            {% if user.role == "Cashier" %}
+            <li><a href="{% url 'resturant_cashier' %}"><i data-feather="user" style="width:18px; height:18px ;margin-right:10px"></i>Cashier</a></li>
+            <li><a href="{% url 'resturant_end_of_day_report' %}"><i data-feather="inbox" style="width:18px; height:18px ;margin-right:10px"></i>End of Day</a></li>
+            <li><a href="{% url 'resturant_sales_history' %}"> <i data-feather="shopping-cart" style="width:18px; height:18px ;margin-right:10px"></i>Sales</a></li>
+
+            {% endif %}
+            
+
+            {% if user.role == 'Manager'  or user.level >= 3  %}
+            <li><a href="{% url 'resturant_dashboard' %}"><i data-feather="bar-chart-2"  style="width:18px; height:18px ;margin-right:10px"></i>dashboard</a></li>
+            <li><a href="{% url 'resturant_manage_approvals' %}"> <i data-feather="box" style="width:18px; height:18px ;margin-right:10px"></i>Manage Approvals</a></li>
+            <li><a href="{% url 'resturant_inventory_list' %}"> <i data-feather="box" style="width:18px; height:18px ;margin-right:10px"></i>Inventory</a></li>
+            <li><a href="{% url 'resturant_sales_history' %}"> <i data-feather="shopping-cart" style="width:18px; height:18px ;margin-right:10px"></i>Sales</a></li>
+
+           {% endif %}
+          
+
+
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content"
+    style=" 
+      padding:rem;
+    margin:0;
+    "
+
+    >
+        {% block main_content %}
+        <!-- This block is for the main content of pages that extend this template -->
+        {% endblock main_content %}
+    </div>
+</div>
+{% endblock %}

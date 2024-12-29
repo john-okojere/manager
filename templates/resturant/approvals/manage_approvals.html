@@ -1,0 +1,102 @@
+{% extends "resturant/base.html" %}
+{% block main_content %}
+<div class="container mt-5">
+    <h2>Manage Approvals</h2>
+    <hr>
+    <!-- Pending Days Section -->
+    <h3>Pending Days</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Day ID</th>
+                <th>Staff</th>
+                <th>Start Time</th>
+                <th>End Time</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for day in pending_days %}
+            <tr>
+                <td>{{ day.id }}</td>
+                <td>{{ day.staff }}</td>
+                <td>{{ day.start_time }}</td>
+                <td>{{ day.end_time }}</td>
+                <td>
+                    <button class="btn btn-success btn-sm" onclick="approveDay({{ day.id }})">Approve</button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No pending days to approve.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pending Discounts Section -->
+    <h3>Pending Discounts</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Discount ID</th>
+                <th>Sale</th>
+                <th>Proposed Discount</th>
+                <th>Cashier</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for discount in pending_discounts %}
+            <tr>
+                <td>{{ discount.id }}</td>
+                <td>#{{ discount.sale.id }}</td>
+                <td>₦{{ discount.proposed_discount }}</td>
+                <td>{{ discount.cashier }}</td>
+                <td>
+                    <button class="btn btn-success btn-sm" onclick="approveDiscount({{ discount.id }})">Approve</button>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No pending discounts to approve.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function approveDay(dayId) {
+        fetch(`/resturant/approve-day/${dayId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message || data.error);
+            if (data.message) location.reload();
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function approveDiscount(discountId) {
+        fetch(`/resturant/approve-discount/${discountId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            alert(data.message || data.error);
+            if (data.message) location.reload();
+        })
+        .catch(error => console.error('Error:', error));
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,1891 @@
+{% extends 'Resturant/base.html'%} 
+{% load static %}
+{% block main_content %}
+<script src="{% static 'assets/js/jquery-3.7.1.min.js' %}"></script>
+<link rel="stylesheet" href="{% static 'assets/css/restaurant.css' %}">
+
+l
+<style>
+    #menu-items .item{
+        height: fit-content !important;
+    }
+    .cart-item{
+        align-items: center;
+        justify-content: space-between;
+        position: relative;
+    }
+
+    .imgContain{
+    border: ;
+    /* box-shadow: 1px 1px 10px rgb(210, 209, 209); */
+    width: 100px;
+    height: 100px;
+    background-color: white;
+    /* padding-bottom: 0.8rem; */
+    /* border-top-left-radius: 12px;
+    border-bottom-right-radius: 12px; */
+    /* background-image: url('g1.png'); */
+    background-repeat: no-repeat;
+    border: 1px solid rgba(235, 235, 235, 0.813);
+    background-size: contain;
+    border-radius: 3px;
+    margin-top: 4px;
+    background-position: center center;
+
+
+}
+.mainContainImg{
+    /* border: 1px solid? rgb(82, 82, 82); */
+    background-image: url('../img/ET.png');
+
+
+    border-radius: 5px;
+    display: flex;
+    width: 130px;
+    justify-content: center;
+}
+.itemMYImage h3{
+    font-size: 12px !important;
+    color: rgba(171, 171, 171, 0.742);
+}
+.itemMYImage h4{
+    font-size: 14px !important;
+}
+
+.contain_texta{
+    display: flex;
+    flex-direction: column;
+    /* gap: 1.4rem; */
+    align-items: center;
+    /* padding-top: 0.8rem; */
+    margin-top: 1.;
+    height: 11rem;
+    /* border: 1px solid red; */
+}
+
+.item p {
+    margin-top: 13px !important;
+    margin-left: 0 !important;
+}
+
+
+
+
+
+</style>
+
+  <link rel="stylesheet" href="{% static 'assets/css/resturant.css'%} ">
+  <div class="container"  style="padding:0px ;margin:0px;">
+    <!-- Sidebar -->
+  
+    <!-- Main Content -->
+    <div class="main-content2" style="padding-top: 0;padding-left: 0;">
+      <!-- Home Content -->
+      <div id="home" class="view active">
+          <!-- <h1 style=" margin-top: 0;
+            font-size:1.5rem;
+            ">Waiter</h1> -->
+
+            <div style="margin-top: -2rem; margin-bottom: 10px; display:  flex;column-gap: 5rem;">
+               <div style="width: 20rem;"> Dashboard / food </div>    <div style="display: flex; align-items: center;">
+            
+                    <input type="text"  id="search-menu" placeholder="Search menu..." oninput="searchMenuItems()" style=" height:  2.5rem; padding-left:6px ; border: 1px solid #E4E4E4; width: 25rem; background-color: #f4f4f4; margin-top: -0.5rem; ">
+                    <script>
+                        function searchMenuItems() {
+                        const searchInput = document.getElementById("search-menu").value.toLowerCase();
+                        const menuItemsContainer = document.getElementById("menu-items");
+                        const items = menuItemsContainer.querySelectorAll(".item");
+        
+                        items.forEach((item) => {
+                            const itemName = item.querySelector(".styleHeader").textContent.toLowerCase();
+                            if (itemName.includes(searchInput)) {
+                                item.style.display = "block";
+                            } else {
+                                item.style.display = "none";
+                            }
+                        });
+                    }
+                    </script>
+        
+        
+                </div>
+        
+            </div>
+      
+      <div class="flex-food-menu-update" style="display:  flex; height: 4rem; border: 1px solid #E4E4E4; gap: 3rem;">
+    
+        
+
+
+
+
+
+
+
+
+
+            
+            <div class="categories" style=" padding-left: 1rem; width:100%;overflow-X:scroll; margin: 0; align-items: center;">
+            <button class="category CategoryActive" data-category="all" style="height: 2.5rem;" >All</button>
+            {% for cat in category %}
+                <button class="category" data-category="{{cat.slug}}">{{cat.name}}</button>
+            {% endfor %}
+
+
+        </div>
+
+      </div>
+    
+          
+
+        <div id="menu-items"
+        style="margin-top: 1.5rem;">
+          <!-- Menu Items dynamically rendered here -->
+        </div>
+        <div class="transaction-container hidden">
+            <table class="transaction-table">
+                <thead>
+                    <tr>
+                        <th>Quantity</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionBody">
+                    <!-- Dynamic rows will go here -->
+                </tbody>
+            </table>
+        </div>
+      </div>
+
+      <!-- Orders Content -->
+      <div id="orders" class="view">
+        <h1>Reserve Table</h1>
+        <div class="container">
+            <!-- Header -->
+            <header class="header">
+                <h1>Tables</h1>
+                <input type="text" id="searchInput" placeholder="Search table here..." class="search-bar">
+                <div id="tableStatusDisplay">
+                    <strong>Table Status:</strong> <span id="tableStatus">None</span>
+                </div>
+            </header>
+            </div>
+    
+            <!-- Legend -->
+            <div class="legend">
+                <span class="legend-item available">Available</span>
+                <span class="legend-item occupied">Occupied</span>
+                <span class="legend-item reserved">Reserved</span>
+            </div>
+            <!-- Payment Modal -->
+<div id="paymentModal" class="modal hidden">
+  <div class="modal-content">
+        <button class="close-discount" onclick="closePaymentModal()">X</button>
+        <h2>Make Payment</h2>
+        <p><strong>Selected Table:</strong> <span id="paymentTableId">None</span></p>
+        <p><strong>Amount:</strong> ₦<span id="paymentAmount">0</span></p>
+        <form id="paymentForm">
+        
+            <label for="customername">Customer Name: </label>
+            <input type="text" id="customerid" placeholder="Customer name" required style="width: 100%;
+            padding: 1px;
+            margin-bottom: 4px;
+            font-size: 16px;
+            height:2.5rem;
+            border: 1px solid #cccc;
+            border-radius: 5px">
+            
+            <label for="amountPaid">Enter Payment:</label>
+            <input type="number" id="amountPaid2" placeholder="Enter amount" required style="width: 100%;
+            padding: 1px;
+            margin-bottom: 10px;
+            font-size: 16px;
+            height:2.5rem;
+            border: 1px solid #cccc;
+            border-radius: 5px">
+          
+            <button class="btn-btn-submitCashierPayment " type="button" id="printReceiptButton" style="text-align: center; background-color: rgb(123, 5, 5);
+            color: #fff;
+            height:2.5rem;
+            border: 1px solid rgb(123, 5, 5);
+            border-radius:4px;
+            padding-left:3px;
+            padding-right:3px;
+            padding: 11px;
+            text-align: center;">Submit Payment</button>
+      </form>
+  </div>
+</div>
+
+<!-- Updated Buttons Section -->
+<div class="controls">
+  <button id="makeAvailableBtn" class="action-btn" disabled>Make Available</button>
+  <button id="makeOccupiedBtn" class="action-btn" disabled>Make Occupied</button>
+  <button id="reserveTableBtn" class="action-btn" disabled>Reserve Table</button>
+</div>
+
+    
+    
+            <!-- Tables Layout -->
+            <div id="tablesLayout" class="tables-layout">
+                <!-- Tables will be dynamically rendered here -->
+            </div>
+        </div>
+    
+    
+     
+
+
+      <!-- Reports Content -->
+      <div id="reports" class="view">
+        <h1>Customers</h1>
+        <div class="container">
+            <!-- Header -->
+            <header class="header">
+                <h1>Customers</h1>
+                <input type="text" placeholder="Search customers here..." class="search-bar" id="searchBar">
+                <button class="add-customer-btn" onclick="openCustomerModal()">+ Add new customer</button>
+            </header>
+    
+            <!-- Filters -->
+            <div class="filters">
+                <button class="filter-btn active">All customers</button>
+                <button class="filter-btn" onclick="viewRecentCustomers()">Recent customers</button>
+            </div>
+        </div>
+    
+        <!-- Customer Table -->
+        <div class="customer-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Mobile number</th>
+                        <th>Address</th>
+                        <th>Number of orders</th>
+                        <th>Last activity</th>
+                        <th>Total spend</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="customerTableBody">
+                    <!-- Rows will be dynamically rendered -->
+                </tbody>
+            </table>
+        </div>
+    
+        <!-- Pagination -->
+        <div class="pagination">
+            <button class="page-btn prev" onclick="prevPage()">Prev</button>
+            <span id="paginationNumbers"></span>
+            <button class="page-btn next" onclick="nextPage()">Next</button>
+        </div>
+    </div>
+
+
+   
+
+
+
+
+
+
+
+
+
+
+
+    
+    <!-- Add Customer Modal -->
+    <div id="addCustomerModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeCustomerModal()">×</span>
+            <h2>Add/Edit New Customer</h2>
+            <form id="addCustomerForm">
+                <label>Name:</label>
+                <input type="text" id="customerName" required>
+                <label>Mobile Number:</label>
+                <input type="text" id="customerMobile" required>
+                <label>Address:</label>
+                <input type="text" id="customerAddress" required>
+                <label>Number of Orders:</label>
+                <input type="number" id="customerOrders" required>
+                <label>Last Activity:</label>
+                <input type="date" id="customerActivity" required>
+                <label>Total Spend (₦ ):</label>
+                <input type="number" id="customerSpend" required>
+                <button type="button" onclick="addCustomer()">Save</button>
+            </form>
+        </div>
+    </div>
+   
+    
+    
+      <!-- Settings Content -->
+      <div id="settings" class="view">
+        <div class="container " >
+            <!-- Header -->
+            <header class="header">
+                <h1>Orders</h1>
+                <input type="text" id="searchBar" placeholder="Search by ID here..." class="search-bar" oninput="searchOrders()">
+            </header>
+    
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn" onclick="viewOrdersOnHold()">Orders on hold</button>
+            </div>
+    
+            <!-- Filters -->
+            <div class="filters">
+                <select id="filterDateTime" class="filter-select" onchange="filterOrders()">
+                    <option value="date">Date</option>
+                    <option value="time">Time</option>
+                </select>
+                <select id="filterStatus" class="filter-select" onchange="filterOrders()">
+                    <option value="all">Order status</option>
+                    <option value="complete">Complete</option>
+                    <option value="on-hold">On Hold</option>
+                    <option value="canceled">Canceled</option>
+                </select>
+            </div>
+        </div>
+
+       
+    
+    
+        <!-- Orders Table -->
+        <div class="orders-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Order details</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Order type</th>
+                        <th>Order status</th>
+                        <th>Price</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="ordersTableBody">
+                    <!-- Rows will be dynamically rendered -->
+                </tbody>
+            </table>
+        </div>
+    
+        <!-- Pagination -->
+        <div class="pagination">
+            <button class="page-btn prev" onclick="prevOrderPage()">Prev</button>
+            <span id="paginationNumbers"></span>
+            <button class="page-btn next" onclick="nextOrderPage() ">Next</button>
+        </div>
+    </div>
+    
+      
+    </div>
+
+    <div class="order-details" style="padding: 10px;
+     height: 78vh;
+    ">
+        <h2>Order Cart: <span id="saleIdText">0000</span> </h2>
+        <!-- Order Information -->
+        <div class="order-info">
+            <!-- <p><strong>Order ID:</strong> <span data-order-id></span></p>
+            <p><strong>Date:</strong> <span data-order-date></span></p> -->
+          </div>
+      
+        <!-- Cart Items -->
+        <div class="cart-items">
+            <!-- Cart items will be dynamically inserted here -->
+          </div>
+          <!-- <div class="contanActionbtn">
+            <button id="discountBtn">Disc</button>
+            <button>Hold</button>
+            <button>Recall</button>
+            <button id="clearBtn">Clear</button>
+          </div> -->
+     <!-- Order Mode -->
+     <div id="order-infw">
+        <div class="order-mode">
+            <button class="mode activeOrder">Dine In</button>
+            <button class="mode">Takeaway</button>
+          </div>
+          <div>
+              <input type="text" style="width: 100%;margin-top: 10px;" class="form-control" name="Table_no" placeholder="Enter Table number">
+          </div>
+            <!-- Cart Summary -->
+           <!-- Cart Summary -->
+           <div class="cart-summary">
+        <p><strong class="textBold">Total:</strong> <span id="subtotal" class="textlight">₦0</span></p>
+            <p class="flexamount">
+            
+            <form action="{% url 'send_to_cashier' %}" id="send_to_cashier" method="post">
+                {% csrf_token %}
+                <button class="continue-btn" type="submit">Send to Cashier</button>
+            </form>
+           
+        </div>
+     </div>   
+    
+  </div>
+  <div id="discountModal" class="modal hidden">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeDiscountModal()">×</span>
+        <h3>Apply Discount</h3>
+        <form id="discountForm">
+            <label for="discountType">Discount Type:</label>
+            <select id="discountType">
+                <option value="total">Total</option>
+                <option value="item">Specific Item</option>
+            </select>
+            <label for="discountPercentage">Discount Percentage:</label>
+            <input type="number" id="discountPercentage" placeholder="Enter discount percentage" required>
+            <div id="itemIndexContainer" class="hidden">
+                <label for="itemIndex">Item Index (1-based):</label>
+                <input type="number" id="itemIndex" placeholder="Enter item index">
+            </div>
+            <button type="submit">Apply Discount</button>
+        </form>
+    </div>
+</div>
+<div id="refundModal" class="modal hidden">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeRefundModal()">×</span>
+      <h3>Process Refund</h3>
+      <p>Are you sure you want to process a refund for the following items?</p>
+      <ul id="refundItemsList">
+        <!-- List of items to refund will be dynamically populated -->
+      </ul>
+      <div class="form-group">
+        <label for="refundReason">Refund Reason:</label>
+        <select id="refundReason">
+          <option value="customer_request">Customer Request</option>
+          <option value="order_error">Order Error</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="form-group hidden" id="additionalReasonContainer">
+        <label for="additionalReason">Additional Reason:</label>
+        <textarea id="additionalReason" placeholder="Provide additional reason"></textarea>
+      </div>
+      <button id="confirmRefundBtn">Confirm Refund</button>
+    </div>
+  </div>
+  <!-- Transaction Modal -->
+<div id="transactionModal" class="modal1 hidden">
+  <div class="modal-content">
+      <button class="close-discount" onclick="closeTransactionModal()" style="
+      cursor: pointer;
+      border-radius: 50%;
+      width: 31px;
+      height: 31px;
+      background-color: #920e0eb1;
+      border: 1px #920e0eb1;
+      margin-left: 211px;
+      color: #fff;
+      margin-top: -14px;">X</button>
+      <h4>Confirm Details</h3>
+      <form id="transactionForm">
+          <div class="form-group">
+              <label>Customer Name</label>
+              <input type="text" class="editForm" id="customerName" placeholder="Enter name">
+          </div>
+          <div class="form-group">
+              <label>Amount Paid</label></br>
+              <input type="number" class="editForm" id="amountPaid" placeholder="Enter Amount">
+          </div>
+          <div class="form-group">
+              <label>Table No</label></br>
+              <input type="text" id="tableNo"  class="editForm"placeholder="Enter no">
+          </div>
+<!-- <h2>Select Payment Option</h2>
+<div class="dropdown-container">
+  <select id="payment-method" class="styled-dropdown" onchange="displayPaymentFields()">
+    <option value="" disabled selected>Select Payment Option</option>
+    <option value="cash-transfer">Cash & Transfer</option>
+    <option value="cash-card">Cash & Card</option>
+    <option value="transfer-card">Transfer & Card</option>
+  </select>
+</div> -->
+
+
+<!--<div id="payment-form">
+    <form id="payment-details-form" onsubmit="submitPayment(event)">
+        <div id="dynamic-payment-fields">
+            Dynamic input fields will be appended here
+        </div>
+        <button type="submit" class="submitBtnSplitPayment">Submit</button>
+    </form>
+</div> -->
+
+        
+            <h4 style="margin-top: 26px; margin-left: 5px;">Payments Type</h4>
+        </div>
+          <div class="payment-types">
+              <button type="button" class="payment-btn" onclick="selectPaymentType('Cash')">Cash</button>
+mentType('Transfer')">Transfer</button>
+              <button type="button" class="payment-btn" onclick="selectPaymentType('Card')">Card</button>
+          </div>
+          <p><strong>Amount Paid:</strong> ₦ <input type="number" id="amountPaid" placeholder="Enter Amount"></p>
+        </p>              <button type="button" class="payment-btn">
+        <p><strong class="textBold">Amount Due:</strong> <span id="total" class="textlight"></span></span></p>
+          <div class="summary">
+              <p><strong>Total:</strong> <span id="modalTotal">0.00</span></p>
+              <p><strong>Payment Type:</strong> <span id="paymentType">None</span></p>
+              <p><strong>Amount Paid</strong>₦ <span id="ReciptAmoutPaid"></span></p>
+              <p><strong>Amount Due:</strong> <span id="ReciptAmountDue"></span></p>
+
+
+          </div>
+          <button type="button" class="btnorderResturant" onclick="printReceipt()">Print Receipt</button>
+      </form>
+  </div>
+</div>
+
+  
+    <!-- Order Details (Cart) -->
+    
+  
+  
+
+  
+    <div class="modal-overlay"></div>
+    <div class="modal-overlay"></div>
+  <div class="EndOfDayModal hidden">
+    <div class="modalContent">
+
+        <div>            
+            <div class="btnCloseEndDay">
+                <button class="btnCloseDay" onclick="closeEndOfDayModal()" style="background-color: rgb(123, 5, 5);">X</button>
+            </div>
+
+            <p><span>Clocked Out</span></p>
+            <h1>03:56pm</h1>
+            <h2>6Hours and 35min worked so far Today</h2>
+        </div>
+
+        <div class="btnCloseEndDay2">
+            <button class="btnCloseEndDay3">View Summary</button>
+            <button class="btnCloseEndDay4">End Day</button>
+        </div>
+    </div>
+  </div>
+<input type="hidden" value="{{request.user.id}}" id="cashierId">
+{% csrf_token %}
+  <script>
+let menuStorage = []; // Define menuStorage array
+
+    
+let cart = []; // Start with an empty cart
+
+let totalAmount = 0;
+let quantity = 1; // Default quantity
+let activeField = "quantityInput"; // Default active field
+let saleId = null; // Global variable to track the current sale ID
+
+
+   document.addEventListener("DOMContentLoaded", () => {
+    const menuItemsContainer = document.getElementById("menu-items");
+    const categories = document.querySelectorAll(".category");
+    const cartItemsContainer = document.querySelector(".cart-items");
+    const subtotalElement = document.getElementById("subtotal");
+    const taxElement = document.getElementById("tax");
+    const amountPaidInput = document.getElementById("amountPaid"); // Input field for Amount Paid
+    const totalElement = document.getElementById("total"); // Amount Due
+    const  orderMode = document.querySelectorAll(".mode");
+    const Customertakeaway = document.querySelectorAll(".form-group")
+    const Preventbutton = document.querySelector(".continue-btn")
+    const discountModal = document.getElementById("discountModal");
+  const refundModal = document.getElementById("refundModal");
+  const refundItemsList = document.getElementById("refundItemsList");
+  const refundReason = document.getElementById("refundReason");
+  const additionalReasonContainer = document.getElementById("additionalReasonContainer");
+  const additionalReason = document.getElementById("additionalReason");
+  const confirmRefundBtn = document.getElementById("confirmRefundBtn");
+
+
+
+    // Example menu data
+    const menuData = {
+        all: [
+            {% for item in items %}
+            { name: "{{ item.name }}", price: {{ item.price }}, category: "{{ item.category }}", id: {{ item.id }} }
+            {% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        ],
+        {% for cat in category %}
+        {{ cat.slug }}: [
+            {% for item in items %}
+            {% if item.category == cat %}
+            { name: "{{ item.name }}", price: {{ item.price }}, category: "{{ item.category }}", id: {{ item.id }} }
+            {% if not forloop.last and not forloop.parentloop.last %}, {% endif %}
+            {% endif %}
+            {% endfor %}
+        ]
+        {% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    };
+
+    // Function to display menu items for a category
+    const displayMenuItems = (category) => {
+        menuItemsContainer.innerHTML = ""; // Clear previous items
+        const items = menuData[category] || [];
+
+        if (items.length === 0) {
+            menuItemsContainer.innerHTML = "<p>No items available.</p>";
+        } else {
+            items.forEach((item) => {
+                const itemDiv = document.createElement("div");
+                itemDiv.className = "item";
+                itemDiv.innerHTML = `
+                
+                <div class="itemContainImage" id="id_${item.id}" style=" width: 8rem;"></div>  
+                <div class="contain_texta">   
+                      <div class="containimage">
+                    <div class="mainContainImg">
+                        <div class="imgContain" style="background-image: url('{% static "assets/img/g2.png" %}')" >
+
+                        </div>
+
+                    </div>
+                </div> 
+                    <div class="styleHeader" style=" padding-bottom:15px; font-size:0.8rem;width: 80%;overflow: hidden;text-overflow: ellipsis; white-space: nowrap;">${item.name}</div> 
+                    <div>   <p class="textPiceSmall">₦${item.price}</p> </div>
+                    <div>   <button class="add-to-cart" style="margin-top:0.8rem;">Add to Cart</button> </div>
+
+                </div> 
+                   
+                `;
+                menuItemsContainer.appendChild(itemDiv);
+
+                // Add item to cart when "Add to Cart" button is clicked
+                itemDiv.querySelector(".add-to-cart").addEventListener("click", () => {
+                    addToCart(item);
+                });
+            });
+        }
+    };
+    document.getElementById("order-infw").style.display = "none";
+const addItem = (itemName, itemPrice, itemID) => {
+    const price = itemPrice; // Example fixed price per item
+   
+    const itemTotal = quantity * price;
+    totalAmount += itemTotal;
+    
+    // If this is the first item, create the sale
+    if (!saleId) {
+        const cashierId = document.getElementById('cashierId').value; // Hidden input for cashier ID
+        const saleIdText = document.getElementById('saleIdText'); // Hidden input for cashier ID
+
+        $.ajax({
+            url: '/restaurant/create-sale/',
+            method: 'POST',
+            data: {
+                cashier_id: cashierId,
+                total_amount: totalAmount,
+                csrfmiddlewaretoken: document.querySelector('[name=csrfmiddlewaretoken]').value
+            },
+            success: function(response) {
+                saleId = response.sale_id;
+                if (saleId.toString().length < 4) {
+                    document.getElementById('saleIdText').innerText = saleId.toString().padStart(4, '0')
+                }
+                console.log(document.getElementById('saleIdText').innerText)
+                addSaleItem(itemID, itemName, price, quantity); // Add the first item after creating the sale
+                console.log(saleId)
+                document.getElementById("order-infw").style.display = "block";
+            },
+            error: function() {
+                alert('Failed to create sale.');
+            }
+        });
+    } else {
+        // Add the item to the existing sale
+        addSaleItem(itemID, itemName, price, quantity);
+    }
+
+}
+
+function addSaleItem(itemID, itemName, price, quantity) {
+    $.ajax({
+        url: '/restaurant/add-sale-item/',
+        method: 'POST',
+        data: {
+            sale_id: saleId,
+            product_id: itemID,
+            quantity: quantity,
+            price: price,
+            csrfmiddlewaretoken: document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        success: function(response) {
+            console.log(`Item added to sale: ${itemName} x${quantity}`);
+        },
+        error: function() {
+            console.log(saleId,
+            itemID,
+            quantity,
+            price)
+            alert(`Failed to add item: ${itemName}`);
+        }
+    });
+}
+
+
+    // Function to add an item to the cart
+    const addToCart = (item) => {
+        const existingItem = cart.find((cartItem) => cartItem.name === item.name);
+        if (existingItem) {
+            existingItem.quantity += 1; // Increment quantity if the item already exists
+        } else {
+            console.log("hyf",item.name, item.price, item.id)
+            addItem(item.name, item.price, item.id);
+            cart.push({ ...item, quantity: 1 }); // Add new item with quantity = 1
+        }
+        updateCart(); // Refresh the cart display
+        console.log(cart)
+    };
+
+
+
+    // Function to update the cart display
+    const updateCart = () => {
+        const cartItemsContainer = document.querySelector(".cart-items");
+        const transactionBody = document.getElementById("transactionBody");
+        cartItemsContainer.innerHTML = ""; // Clear previous cart items
+        transactionBody.innerHTML = ""; // Clear transaction table rows
+
+
+        if (cart.length === 0) {
+            cartItemsContainer.innerHTML = "<p>Your cart is empty!</p>";
+            subtotalElement.textContent = "₦0 ";
+            totalElement.textContent = "₦0";
+            return;
+        }
+
+        let subtotal = 0;
+
+        cart.forEach((item, index) => {
+            subtotal += item.price * item.quantity;
+
+            const cartItem = document.createElement("div");
+            cartItem.className = "cart-item";
+            cartItem.innerHTML = `
+                <div class="containCartItems">
+                <div>
+                     <button class="delete-btn" >&times;</button></div>
+    
+                </div>
+                    <div class="itemMYImage"> 
+                        <h3>${item.category.charAt(0).toUpperCase() + item.category.slice(1)}</h3>
+                        
+                         <h4  style="width:7.5rem">${item.name}</h4>
+                        
+                    </div>
+                </div>
+                <div class="pricingCart " style="margin-top:1rem;">
+                    <div>
+                        <div class="item-controls" style="margin-top:1rem; margin-bottom:8px;">
+                            <button class="btnQtyIncrease btn-res quantity-btn decrease" data-index="${index}">-</button>
+                            <span class="quantity">${item.quantity}</span>
+                            <button class="btnQtyIncrease quantity-btn increase" data-index="${index}">+</button>
+                        </div>
+                        <div><h4 style="margin-top:0px; font-size:15px">Price:₦ ${item.price}</h4></div>
+                    </div
+                </div>
+            </div>
+            `;
+            const transactionRow = `
+            <tr>
+                <td>${item.quantity}</td>
+                <td>${item.name}</td>
+                <td>${item.price}</td>
+                <td>${(item.quantity * item.price).toFixed(2)}</td>
+            </tr>
+        `;
+        transactionBody.innerHTML += transactionRow;
+            cartItemsContainer.appendChild(cartItem);
+
+            // Add functionality to "+" and "-" buttons
+            cartItem.querySelector(".decrease").addEventListener("click", () => {
+                const item = cart[index];
+                $.ajax({
+                    url: '/restaurant/decrease-sale-item/',
+                    method: 'POST',
+                    data: {
+                        sale_id: saleId,
+                        product_id: item.id,
+                        quantity: item.quantity - 1,
+                        csrfmiddlewaretoken: document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    success: function(response) {
+                        decreaseQuantity(index);
+                        console.log(`Item quantity decreased: ${item.name}`);
+                    },
+                    error: function() {
+                        alert(`Failed to decrease item quantity: ${item.name}`);
+                    }
+                });
+            });
+
+            cartItem.querySelector(".increase").addEventListener("click", () => {
+                
+                const item = cart[index];
+                $.ajax({
+                    url: '/restaurant/increase-sale-item/',
+                    method: 'POST',
+                    data: {
+                        sale_id: saleId,
+                        product_id: item.id,
+                        quantity: item.quantity + 1,
+                        csrfmiddlewaretoken: document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    success: function(response) {
+                        increaseQuantity(index);
+                        console.log(`Item quantity increased: ${item.name}`);
+                    },
+                    error: function() {
+                        alert(`Failed to increase item quantity: ${item.name}`);
+                    }
+                });
+            });
+
+            // Add functionality to delete button
+            cartItem.querySelector(".delete-btn").addEventListener("click", () => {
+                removeFromCart(index);
+                const item = cart[index];
+                console.log(saleId, item)
+                $.ajax({
+                    url: '/restaurant/delete-sale-item/',
+                    method: 'POST',
+                    data: {
+                        sale_id: saleId,
+                        product_id: item.id,
+                        csrfmiddlewaretoken: document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    success: function(response) {
+                        updateCart(); // Refresh the cart display
+                        alert('Item deleted successfully.');
+                    },
+                    error: function() {
+                        alert('Failed to delete item.');
+                    }
+                });
+                console.log(cart)
+            });
+        });
+
+        const amountPaid = parseFloat(amountPaidInput.value) || 0; // Get Amount Paid, default to 0
+        const total = subtotal - amountPaid; // Calculate total (amount due)
+
+        subtotalElement.textContent = `₦${subtotal.toFixed(2)} `;
+        totalElement.textContent = `₦${total.toFixed(2)}`;
+    };
+
+    
+
+    // Function to decrease item quantity
+    const decreaseQuantity = (index) => {
+        if (cart[index].quantity > 1) {
+            cart[index].quantity -= 1;
+            updateCart();
+        }
+    };
+
+    // Function to increase item quantity
+    const increaseQuantity = (index) => {
+        cart[index].quantity += 1;
+        updateCart();
+    };
+
+    // Function to remove an item from the cart
+    const removeFromCart = (index) => {
+        cart.splice(index, 1); // Remove item at the given index
+        updateCart(); // Refresh the cart display
+    };
+
+    // Add event listeners for category buttons
+    categories.forEach((category) => {
+        category.addEventListener("click", () => {
+            categories.forEach((btn) => btn.classList.remove("CategoryActive"));
+
+        // Add the 'CategoryActive' class to the clicked button
+        category.classList.add("CategoryActive");
+            const categoryType = category.dataset.category;
+            displayMenuItems(categoryType);
+        });
+    });
+
+    const tableNumberInput = document.querySelector('input[name="Table_no"]');
+    tableNumberInput.addEventListener('input', () => {
+        const tableNumber = tableNumberInput.value;
+        console.log(tableNumberInput.value)
+        if (saleId) {
+            $.ajax({
+                url: '/restaurant/update-table-number/',
+                method: 'POST',
+                data: {
+                    sale_id: saleId,
+                    table_number: tableNumber,
+                    csrfmiddlewaretoken: document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                success: function(response) {
+                    console.log(`Table number updated to: ${tableNumber}`);
+                },
+                error: function() {
+                    alert('Failed to update table number.');
+                }
+            });
+        }
+    });
+
+    orderMode.forEach((mode) => {
+        mode.addEventListener("click", () => {
+            orderMode.forEach((btn) => btn.classList.remove("activeOrder"));
+            mode.classList.toggle("activeOrder");
+            console.log(saleId)
+            if(mode.textContent=="Dine In"){
+                $.ajax({
+                    url: '/restaurant/set-sale-type/',
+                    method: 'POST',
+                    data: {
+                        sale_id: saleId,
+                        sale_type: 'Dine In',
+                        csrfmiddlewaretoken: document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    success: function(response) {
+                        tableNumberInput.style.display = "block"
+                        console.log(`Sale type set to: Dine In`);
+                    },
+                    error: function() {
+                        alert('Failed to set sale type.');
+                    }
+                });
+                Customertakeaway.forEach((item)=>{
+                    item.classList.remove("hidden")
+                })
+                console.log("Dine In")
+            }
+            if(mode.textContent=="Takeaway"){
+                $.ajax({
+                    url: '/restaurant/set-sale-type/',
+                    method: 'POST',
+                    data: {
+                        sale_id: saleId,
+                        sale_type: 'Take Away' ,
+                        csrfmiddlewaretoken: document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    success: function(response) {
+                        console.log(`Sale type set to: Take Away`);
+                        tableNumberInput.style.display = "none"
+                    },
+                    error: function() {
+                        alert('Failed to set sale type.');
+                    }
+                });
+                Customertakeaway.forEach((item)=>{
+                    item.classList.add("hidden")
+                })
+                console.log("Takeaway")
+            }
+        
+            const saleType = mode.textContent; // Get the selected sale type (Dine In or Takeaway)
+
+            
+
+        // Add the 'activeOrder' class to the clicked button
+       
+        
+        // console.log(btn.textContent)
+        });
+    });
+  
+
+
+
+
+//     // Add event listener to the Amount Paid input field
+// amountPaidInput.addEventListener("input", updateCart);
+    
+
+    // Initialize the page with "All" category
+displayMenuItems("all");
+});
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const menuOptions = document.querySelectorAll(".menu-option"); // Menu options (sidebar links)
+    const views = document.querySelectorAll(".view"); // Content views
+  
+    // Function to show a specific view
+    const showView = (viewId) => {
+      views.forEach((view) => {
+        view.classList.remove("active"); // Hide all views
+        if (view.id === viewId) {
+          view.classList.add("active"); // Show the clicked view
+        }
+      });
+    };
+  
+    // Add event listeners to menu options
+    menuOptions.forEach((menuOption) => {
+      menuOption.addEventListener("click", (e) => {
+        e.preventDefault(); // Prevent default link behavior
+        const viewId = menuOption.dataset.view; // Get the `data-view` attribute
+        showView(viewId); // Show the corresponding view
+      });
+    });
+  
+    // Initialize: Show the home view by default
+    showView("home");
+  });
+  document.addEventListener("DOMContentLoaded", () => {
+  const orderIdElement = document.querySelector(".order-info p strong[data-order-id]");
+  const orderDateElement = document.querySelector(".order-info p strong[data-order-date]");
+
+  let orderId = 0; // Starting Order ID
+
+  // Function to generate a new Order ID
+  const generateOrderId = () => {
+    orderId += 1;
+    return String(orderId).padStart(6, "0"); // Pad with leading zeros
+  };
+
+  function clearCart() {
+    cart = []; // Reset cart array
+    updateCart(); // Update the cart display
+    alert("Cart has been cleared.");
+}
+
+
+  // Function to get the current date
+  const getCurrentDate = () => {
+    const now = new Date();
+    const day = String(now.getDate()).padStart(2, "0");
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const year = now.getFullYear();
+    return `${year}-${month}-${day}`; // Format: YYYY-MM-DD
+  };
+
+  // Set the initial Order ID and Date
+//   const updateOrderDetails = () => {
+//     orderIdElement.textContent = `#${generateOrderId()}`;
+//     orderDateElement.textContent = getCurrentDate();
+//   };
+
+  // Initialize order details
+//   updateOrderDetails();
+});
+// let orderId = parseInt(localStorage.getItem("orderId")) || 0;
+
+// const generateOrderId = () => {
+//   orderId += 1;
+//   localStorage.setItem("orderId", orderId); // Save the new ID in localStorage
+//   return String(orderId).padStart(6, "0");
+// };
+document.addEventListener("DOMContentLoaded", () => {
+    const orderIdElement = document.getElementById("order-id"); // Select the Order ID element
+    const orderDateElement = document.getElementById("order-date"); // Select the Date element
+  
+    // Load Order ID from localStorage or start at 0
+    let orderId = parseInt(localStorage.getItem("orderId")) || 0;
+  
+    // Function to generate a new Order ID
+    const generateOrderId = () => {
+      orderId += 1; // Increment Order ID
+      localStorage.setItem("orderId", orderId); // Save the new ID in localStorage
+      return String(orderId).padStart(6, "0"); // Format as a 6-digit number with leading zeros
+    };
+  
+    // Function to get the current date
+    const getCurrentDate = () => {
+      const now = new Date();
+      const day = String(now.getDate()).padStart(2, "0");
+      const month = String(now.getMonth() + 1).padStart(2, "0");
+      const year = now.getFullYear();
+      return `${year}-${month}-${day}`; // Format: YYYY-MM-DD
+    };
+  
+    // Update the Order ID and Date dynamically
+    // const updateOrderDetails = () => {
+    //   orderIdElement.textContent = `#${generateOrderId()}`; // Set the Order ID
+    //   orderDateElement.textContent = getCurrentDate(); // Set the current date
+    // };
+  
+    // Initialize order details
+    // updateOrderDetails();
+  });
+  document.addEventListener("DOMContentLoaded", () => {
+    const tabs = document.querySelectorAll(".tab-btn");
+    const ordersTable = document.querySelector(".orders-table");
+  
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        tabs.forEach((t) => t.classList.remove("active"));
+        tab.classList.add("active");
+  
+        // Example: Load specific data for "Orders on hold"
+        if (tab.textContent === "Orders on hold") {
+          ordersTable.querySelector("tbody").innerHTML = `
+            <tr>
+              <td>3456874</td>
+              <td>x1 Margarita pizza</td>
+              <td>2/2/2024</td>
+              <td>03:38</td>
+              <td>Dine in</td>
+              <td><span class="status on-hold">On Hold</span></td>
+              <td>245.65 EGP</td>
+              <td>
+                <button class="action-btn edit">✏️</button>
+                <button class="action-btn delete">🗑️</button>
+              </td>
+            </tr>
+          `;
+        } else {
+          // Reload original "Order history" content
+          location.reload(); // Or dynamically re-render the original table content
+        }
+      });
+    });
+  });
+  
+// Open the transaction modal
+function openTransactionModal() {
+    const modal = document.querySelector(".modal1");
+    const total = document.getElementById("total").textContent;
+    const modalAmountPaid = document.getElementById("ReciptAmoutPaid")
+    const modalAmountDue = document.getElementById("ReciptAmountDue") ;
+    const cloaeCartContent = document.querySelector(".order-details")
+    const UpdatesubtotalElement = document.getElementById("subtotal").innerHTML;
+    const UpdatetaxElement = document.getElementById("tax");
+    const  orderMode = document.querySelectorAll(".mode");
+
+    
+
+    const UpdateamountPaidInput = document.getElementById("amountPaid"); // Input field for Amount Paid
+    const UpdatetotalElement = document.getElementById("total").innerHTML; // Amount Due
+    const a = 12
+    const B = 4
+    
+    // Populate modal with current cart total
+    document.getElementById("modalTotal").textContent = UpdatesubtotalElement;
+     const myamountPaid = parseFloat(UpdateamountPaidInput.value) || 0;
+    modalAmountPaid.textContent=myamountPaid;
+    modalAmountDue.textContent=UpdatetotalElement ; 
+    
+
+
+ 
+
+
+
+
+
+
+
+    
+
+    // Display the modal
+    modal.classList.remove("hidden");
+    cloaeCartContent.classList.add("hidden")
+}
+
+// Close the transaction modal
+function closeTransactionModal() {
+    const cloaeCartContent = document.querySelector(".order-details")
+
+    const modal = document.getElementById("transactionModal");
+    modal.classList.add("hidden");
+    cloaeCartContent.classList.remove("hidden")
+
+}
+
+// Track selected payment type
+function selectPaymentType(type) {
+    document.getElementById("paymentType").textContent = type;
+}
+
+
+
+// Specify the payment method
+function pay(method) {
+    const paidAmount = parseFloat(document.getElementById('amountInput').value) || 0; // Get the paid amount
+    const due = paidAmount - totalAmount; // Calculate the difference
+
+    const amountDueElement = document.getElementById('amountDue');
+    const amountPaidElement = document.getElementById('amountPaid');
+
+    // Update the amount paid and due
+    amountPaidElement.innerText = paidAmount.toFixed(2);
+    amountDueElement.innerText = due.toFixed(2);
+
+    // Update colors
+    if (due < 0) {
+        amountDueElement.style.color = "red"; // Customer owes
+        alert(`The customer still owes NGN ${Math.abs(due).toFixed(2)}.`);
+    } else if (due > 0) {
+        amountDueElement.style.color = "green"; // Change due
+        alert(`You owe the customer NGN ${due.toFixed(2)} in change.`);
+    } else {
+        amountDueElement.style.color = "black"; // Exact payment
+        alert(`Payment is exact. Thank you for paying via ${method}!`);
+    }
+
+    if (due >= 0) {
+        // If the payment is complete or more, update the backend, print receipt, and reset UI
+        $.ajax({
+            url: '/salon/Pay-for-sale/', // Endpoint for completing the sale
+            type: 'POST',
+            data: {
+                sale_id: saleId,
+                csrfmiddlewaretoken: getCSRFToken(),
+            },
+            success: function (response) {
+                if (response.status === 'success') {
+                    alert('Sale has been successfully paid for.');
+                } else {
+                    console.log(saleId);
+                    if (!saleId) {
+                        response.message = "You have not selected any item!";
+                    }
+                    alert('Error: ' + response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+                alert('An error occurred while completing the sale.');
+            }
+        });
+        printReceipt(paidAmount, due, method);
+        clearTransaction();
+        closePaymentModal();
+    }
+}
+
+document.getElementById('send_to_cashier').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevent the default form submission
+    const form = event.target;
+    const formData = new FormData(form); // Get form data
+    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    formData.append('csrfmiddlewaretoken', csrfToken);
+    formData.append('sale_id', saleId);
+
+    $.ajax({
+        url: form.action, // Form's action attribute
+        method: form.method, // Form's method attribute
+        data: formData, // Use FormData object
+        processData: false, // Required for FormData
+        contentType: false, // Required for FormData
+        success: function(response) {
+            alert('Sale completed successfully.');
+            window.location.href = '/restaurant/waiter/'; // Redirect to the waiter page
+        },
+        error: function(xhr, status, error) {
+            alert('Failed to complete sale.');
+        }
+    });
+});
+
+
+// Function to print a receipt
+function printReceipt(paidAmount, change, method) {
+    const UpdateamountPaidInput = document.getElementById("amountPaid").value; // Input field for Amount Paid
+    // Populate modal with current cart total
+    // document.getElementById("modalTotal").textContent = UpdatesubtotalElement;
+    const UpdatesubtotalElement = document.getElementById("subtotal").innerHTML
+    const tbody = document.getElementById('transactionBody');
+    const UpdatetotalElement = document.getElementById("total").innerHTML; // Amount Due    
+// Populate modal with current cart total
+ const myamountPaid = parseFloat(UpdateamountPaidInput.value) || 0;
+ const modalAmountPaid1 = document.getElementById("ReciptAmoutPaid").textContent
+    const modalAmountDue1 = document.getElementById("ReciptAmountDue").textContent ;
+
+
+
+
+
+    if (!tbody || !tbody.rows.length) {
+        alert("No transaction data to print.");
+        return;
+    }
+    // Generate receipt content
+    let receiptContent = `
+        <div style="text-align: center; font-family: Arial, sans-serif; margin: 20px;">
+            <h2 style="margin-bottom: 10px;">Elegante Resturant</h2>
+            <p style="margin: 5px 0;">No 1 Bria Street Ademola Adetokunbo Crescent<br>Wuse 2 Abuja</p>
+            <p style="margin: 5px 0;">07068686839</p>
+            <p style="margin: 5px 0;">${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</p>
+            <p style="margin: 5px 0;">CHECK# 100022</p>
+            <hr>
+            <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+                <thead>
+                    <tr>
+                        <th style="text-align: left;">QTY</th>
+                        <th style="text-align: left;">Description</th>
+                        <th style="text-align: right;">Price</th>
+                        <th style="text-align: right;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+    `;
+
+    Array.from(tbody.rows).forEach((row) => {
+        const cells = row.cells;
+        receiptContent += `
+            <tr>
+                <td>${cells[0].innerText}</td>
+                <td>${cells[1].innerText}</td>
+                <td>${cells[2].innerText}</td>
+                <td>${cells[3].innerText}</td>
+            </tr>
+        `;
+    });
+    // Add total, VAT, and payment info
+    receiptContent += `
+                </tbody>
+            </table>
+            <hr>
+            <p style="margin: 5px 0;"><strong>TOTAL: NGN ${UpdatesubtotalElement}</strong></p>
+            <p style="margin: 5px 0;">VAT (7.5%): NGN ${(totalAmount * 0.075).toFixed(2)}</p>
+            <p style="margin: 5px 0;">Cashier: User</p>
+            <p><strong>Paid: NGN ${modalAmountPaid1 }</strong></p>
+            <p><strong>Change: NGN ${modalAmountDue1}</strong></p>
+            
+           
+            <hr>
+            <p style ="padding: 0;
+    font-size: 12px;
+            <hr>
+            <p style="margin: 5px 0;">Powered by digi02.org</p>
+        </div>
+    `;
+
+    // Display the receipt in a new window for printing
+    const receiptWindow = window.open("", "Receipt", "width=400,height=600");
+    receiptWindow.document.write(receiptContent);
+    receiptWindow.document.close();
+    receiptWindow.print();
+}
+
+let customerData = []; // Array to store customer data
+let currentPage = 1; // Current page
+const rowsPerPage = 5; // Number of rows per page
+
+// Example customer data
+customerData = [
+    { name: "Ahmed Aly", mobile: "01254876529", address: "1901 Thorndrige", orders: 44, activity: "2024-04-01", spend: 4568 },
+    { name: "Adam Ahmed", mobile: "01024876559", address: "8502 Preston Rd", orders: 43, activity: "2024-03-31", spend: 2455 },
+    { name: "Jenny Wilson", mobile: "01144960845", address: "1901 Thorndrige", orders: 40, activity: "2013-08-16", spend: 3456 },
+    { name: "John Doe", mobile: "01589653210", address: "123 Main St", orders: 12, activity: "2023-12-01", spend: 1200 },
+    { name: "Jane Smith", mobile: "01856321087", address: "45 South Rd", orders: 7, activity: "2023-11-15", spend: 850 },
+    { name: "Alice Cooper", mobile: "01745231095", address: "789 Park Ave", orders: 24, activity: "2023-10-05", spend: 2300 },
+    // Add more sample data as needed
+];
+
+// Render table with pagination
+function renderTable(filteredData = customerData) {
+    const customerTableBody = document.getElementById("customerTableBody");
+    customerTableBody.innerHTML = ""; // Clear table
+
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    const pageData = filteredData.slice(start, end);
+
+    if (pageData.length === 0) {
+        customerTableBody.innerHTML = `<tr><td colspan="7">No customers found.</td></tr>`;
+        return;
+    }
+
+    pageData.forEach((customer) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${customer.name}</td>
+            <td>${customer.mobile}</td>
+            <td>${customer.address}</td>
+            <td>${customer.orders}</td>
+            <td>${new Date(customer.activity).toLocaleDateString()}</td>
+            <td>₦${customer.spend.toLocaleString()}</td>
+            <td><button class="action-btn">Make order</button></td>
+        `;
+        customerTableBody.appendChild(row);
+    });
+
+    renderPagination(filteredData);
+}
+
+// Render pagination
+function renderPagination(filteredData) {
+    const paginationNumbers = document.getElementById("paginationNumbers");
+    paginationNumbers.innerHTML = ""; // Clear pagination
+
+    const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+    for (let i = 1; i <= totalPages; i++) {
+        const pageBtn = document.createElement("button");
+        pageBtn.className = `page-btn ${i === currentPage ? "active" : ""}`;
+        pageBtn.textContent = i;
+        pageBtn.addEventListener("click", () => {
+            currentPage = i;
+            renderTable(filteredData);
+        });
+        paginationNumbers.appendChild(pageBtn);
+    }
+}
+
+// Go to the previous page
+function prevPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        renderTable();
+    }
+}
+
+// Go to the next page
+function nextPage() {
+    const totalPages = Math.ceil(customerData.length / rowsPerPage);
+    if (currentPage < totalPages) {
+        currentPage++;
+        renderTable();
+    }
+}
+
+// Open the "Add Customer" modal
+function openCustomerModal() {
+    document.getElementById("addCustomerModal").classList.remove("hidden");
+}
+
+// Close the "Add Customer" modal
+function closeCustomerModal() {
+    document.getElementById("addCustomerModal").classList.add("hidden");
+}
+
+// Add a new customer
+function addCustomer() {
+    const name = document.getElementById("customerName").value;
+    const mobile = document.getElementById("customerMobile").value;
+    const address = document.getElementById("customerAddress").value;
+    const orders = parseInt(document.getElementById("customerOrders").value, 10);
+    const activity = document.getElementById("customerActivity").value;
+    const spend = parseFloat(document.getElementById("customerSpend").value);
+
+    if (!name || !mobile || !address || !orders || !activity || !spend) {
+        alert("Please fill all fields.");
+        return;
+    }
+
+    // Add the new customer to the array
+    customerData.unshift({ name, mobile, address, orders, activity, spend });
+    closeCustomerModal();
+    currentPage = 1; // Reset to the first page
+
+    renderTable(); // Re-render the table to include the new customer
+}
+
+// Search customers
+function searchCustomers() {
+    const searchTerm = document.getElementById("searchBar").value.toLowerCase();
+    const filteredData = customerData.filter((customer) =>
+        customer.name.toLowerCase().includes(searchTerm) ||
+        customer.mobile.includes(searchTerm) ||
+        customer.address.toLowerCase().includes(searchTerm)
+    );
+    currentPage = 1; // Reset to the first page when searching
+    renderTable(filteredData);
+}
+
+// Initialize the search bar event listener
+document.getElementById("searchBar").addEventListener("input", searchCustomers);
+
+// View recent customers
+function viewRecentCustomers() {
+    currentPage = 1;
+    renderTable();
+}
+
+// Initialize table
+renderTable();
+
+
+let orderData = []; // Array to store order data
+let currentOrderPage = 1; // Current page for orders
+const ordersPerPage = 5; // Number of orders per page
+
+// Example order data
+orderData = [
+    { id: "3456872", details: "x2 Chicken BBQ pizza", date: "2024-02-02", time: "03:36", type: "Takeaway", status: "On Hold", price: 3250.65 },
+    { id: "3456873", details: "x1 Vegetable pizza", date: "2024-02-02", time: "03:37", type: "Dine in", status: "Complete", price: 650.65 },
+    { id: "3456874", details: "x3 Margarita pizza", date: "2024-02-01", time: "10:15", type: "Takeaway", status: "Complete", price: 2000.50 },
+    { id: "3456872", details: "x2 Chicken BBQ pizza", date: "2024-02-02", time: "03:36", type: "Takeaway", status: "On Hold", price: 3250.65 },
+    { id: "3456873", details: "x1 Vegetable pizza", date: "2024-02-02", time: "03:37", type: "Dine in", status: "Complete", price: 650.65 },
+    { id: "3456874", details: "x3 Margarita pizza", date: "2024-02-01", time: "10:15", type: "Takeaway", status: "Complete", price: 2000.50 },
+    { id: "3456875", details: "x1 Tandoori pizza", date: "2024-01-28", time: "14:45", type: "Dine in", status: "Canceled", price: 550.00 },
+    { id: "3456876", details: "x2 Cheeseburger", date: "2024-01-20", time: "19:30", type: "Takeaway", status: "On Hold", price: 900.00 },
+    { id: "3456877", details: "x4 Pepperoni pizza", date: "2024-01-15", time: "21:10", type: "Dine in", status: "Complete", price: 3000.00 },
+    { id: "3456875", details: "x1 Tandoori pizza", date: "2024-01-28", time: "14:45", type: "Dine in", status: "Canceled", price: 550.00 },
+    { id: "3456876", details: "x2 Cheeseburger", date: "2024-01-20", time: "19:30", type: "Takeaway", status: "On Hold", price: 900.00 },
+    { id: "3456877", details: "x4 Pepperoni pizza", date: "2024-01-15", time: "21:10", type: "Dine in", status: "Complete", price: 3000.00 },
+    // Add more sample orders as needed
+];
+
+// Render the orders table
+function renderOrdersTable(filteredOrders = orderData) {
+    const ordersTableBody = document.querySelector(".orders-table tbody");
+    ordersTableBody.innerHTML = ""; // Clear existing table rows
+
+    const start = (currentOrderPage - 1) * ordersPerPage;
+    const end = start + ordersPerPage;
+    const pageOrders = filteredOrders.slice(start, end);
+
+    if (pageOrders.length === 0) {
+        ordersTableBody.innerHTML = `<tr><td colspan="8">No orders found.</td></tr>`;
+        return;
+    }
+
+    pageOrders.forEach((order) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${order.id}</td>
+            <td>${order.details}</td>
+            <td>${new Date(order.date).toLocaleDateString()}</td>
+            <td>${order.time}</td>
+            <td>${order.type}</td>
+            <td><span class="status ${order.status.toLowerCase()}">${order.status}</span></td>
+            <td>₦${order.price.toLocaleString()}</td>
+            <td>
+                <button class="action-btn edit" onclick="editOrder('${order.id}')">✏️</button>
+                <button class="action-btn delete" onclick="deleteOrder('${order.id}')">🗑️</button>
+            </td>
+        `;
+        ordersTableBody.appendChild(row);
+    });
+
+    renderOrdersPagination(filteredOrders);
+}
+
+// Render pagination for orders
+function renderOrdersPagination(filteredOrders) {
+    const paginationNumbers = document.querySelector(".pagination");
+    paginationNumbers.innerHTML = ""; // Clear existing pagination buttons
+
+    const totalPages = Math.ceil(filteredOrders.length / ordersPerPage);
+    for (let i = 1; i <= totalPages; i++) {
+        const pageBtn = document.createElement("button");
+        pageBtn.className = `page-btn ${i === currentOrderPage ? "active" : ""}`;
+        pageBtn.textContent = i;
+        pageBtn.addEventListener("click", () => {
+            currentOrderPage = i;
+            renderOrdersTable(filteredOrders);
+        });
+        paginationNumbers.appendChild(pageBtn);
+    }
+}
+
+// Go to the previous page for orders
+function prevOrderPage() {
+    if (currentOrderPage > 1) {
+        currentOrderPage--;
+        renderOrdersTable();
+    }
+}
+
+// Go to the next page for orders
+function nextOrderPage() {
+    const totalPages = Math.ceil(orderData.length / ordersPerPage);
+    if (currentOrderPage < totalPages) {
+        currentOrderPage++;
+        renderOrdersTable();
+    }
+}
+
+// Delete an order
+function deleteOrder(orderId) {
+    orderData = orderData.filter((order) => order.id !== orderId);
+    renderOrdersTable();
+}
+
+// Edit an order
+function editOrder(orderId) {
+    const order = orderData.find((order) => order.id === orderId);
+    if (!order) return alert("Order not found!");
+
+    // Populate a modal or form for editing (mock implementation below)
+    alert(`Editing Order ID: ${order.id}`);
+    // You can implement a modal similar to the "Add Customer" modal
+}
+
+// Filter orders by status or date
+function filterOrders() {
+    const statusSelect = document.querySelector(".filters .filter-select:nth-child(2)");
+    const selectedStatus = statusSelect.value;
+
+    const filteredOrders = selectedStatus === "all"
+        ? orderData
+        : orderData.filter((order) => order.status.toLowerCase() === selectedStatus.toLowerCase());
+
+    currentOrderPage = 1; // Reset to the first page when filtering
+    renderOrdersTable(filteredOrders);
+}
+
+// Search orders by ID
+function searchOrders() {
+    const searchTerm = document.querySelector(".search-bar").value.toLowerCase();
+    const filteredOrders = orderData.filter((order) =>
+        order.id.toLowerCase().includes(searchTerm)
+    );
+
+    currentOrderPage = 1; // Reset to the first page when searching
+    renderOrdersTable(filteredOrders);
+}
+
+// Attach event listeners for filters and search bar
+document.querySelector(".filters .filter-select:nth-child(2)").addEventListener("change", filterOrders);
+document.querySelector(".search-bar").addEventListener("input", searchOrders);
+
+// Initialize the orders table
+renderOrdersTable();
+
+
+function displayPaymentFields() {
+    const paymentMethod = document.getElementById("payment-method").value;
+    const dynamicFields = document.getElementById("dynamic-payment-fields");
+    dynamicFields.innerHTML = ""; // Clear existing fields
+  
+    let inputHTML = ""; // Variable to hold dynamically generated input fields
+    if (paymentMethod === "cash-transfer") {
+      inputHTML = `
+        <div class="form-field">
+            <input type="number" id="cash-amount" name="cash-amount" placeholder="Enter cash amount" required>
+        </div>
+        <div class="form-field">
+            <input type="number" id="transfer-amount" name="transfer-amount" placeholder="Enter transfer amount" required>
+        </div>
+        <div class="form-field">
+            <input type="number" id="SplitTotal" name="total-amount" placeholder="Total" readonly>
+        </div>
+      `;
+    } else if (paymentMethod === "cash-card") {
+      inputHTML = `
+        <div class="form-field">
+            <input type="number" id="cash-amount" name="cash-amount" placeholder="Enter cash amount" required>
+        </div>
+        <div class="form-field">
+            <input type="number" id="card-amount" name="card-amount" placeholder="Enter card amount" required>
+        </div>
+        <div class="form-field">
+            <input type="number" id="SplitTotal" name="total-amount" placeholder="Total" readonly>
+        </div>
+      `;
+    } else if (paymentMethod === "transfer-card") {
+      inputHTML = `
+        <div class="form-field">
+            <input type="number" id="transfer-amount" name="transfer-amount" placeholder="Enter transfer amount" required>
+        </div>
+        <div class="form-field">
+            <input type="number" id="card-amount" name="card-amount" placeholder="Enter card amount" required>
+        </div>
+        <div class="form-field">
+            <input type="number" id="SplitTotal" name="total-amount" placeholder="Total" readonly>
+        </div>
+      `;
+    }
+  
+    dynamicFields.innerHTML = inputHTML;
+  
+    // Add event listeners for input changes
+    const cashInput = document.getElementById("cash-amount");
+    const transferInput = document.getElementById("transfer-amount");
+    const cardInput = document.getElementById("card-amount");
+    const totalInput = document.getElementById("SplitTotal");
+    const BtnSplitPayment =document.querySelector(".submitBtnSplitPayment");
+  
+    const calculateTotal = () => {
+      let total = 0;
+      if (cashInput) total += parseFloat(cashInput.value) || 0;
+      if (transferInput) total += parseFloat(transferInput.value) || 0;
+      if (cardInput) total += parseFloat(cardInput.value) || 0;
+  
+      totalInput.value = total.toFixed(2); // Update total field
+    };
+  
+    // Attach input event listeners to calculate the total
+    if (cashInput) cashInput.addEventListener("input", calculateTotal);
+    if (transferInput) transferInput.addEventListener("input", calculateTotal);
+    if (cardInput) cardInput.addEventListener("input", calculateTotal);
+
+    BtnSplitPayment.addEventListener('click',(e)=>{
+        e.preventDefault()
+    })
+  }
+  
+function submitPayment(event) {
+  event.preventDefault(); // Prevent form submission
+
+  const paymentMethod = document.getElementById("payment-method").value;
+  const cashAmount = document.getElementById("cash-amount")?.value || 0;
+  const transferAmount = document.getElementById("transfer-amount")?.value || 0;
+  const cardAmount = document.getElementById("card-amount")?.value || 0;
+
+  // Combine all amounts based on the payment method
+  let totalAmount = 0;
+  if (paymentMethod === "cash-transfer") {
+      totalAmount = parseFloat(cashAmount) + parseFloat(transferAmount);
+  } else if (paymentMethod === "cash-card") {
+      totalAmount = parseFloat(cashAmount) + parseFloat(cardAmount);
+  } else if (paymentMethod === "transfer-card") {
+      totalAmount = parseFloat(transferAmount) + parseFloat(cardAmount);
+  }
+
+  
+  // Display total or process payment
+  alert(`Total Amount Paid: ₦${totalAmount.toFixed(2)}`);
+}
+document.addEventListener("DOMContentLoaded", () => {
+    const tablesLayout = document.getElementById("tablesLayout");
+    const tableStatusDisplay = document.getElementById("tableStatus");
+    const makeAvailableBtn = document.getElementById("makeAvailableBtn");
+    const makeOccupiedBtn = document.getElementById("makeOccupiedBtn");
+    const reserveTableBtn = document.getElementById("reserveTableBtn");
+    const paymentModal = document.getElementById("paymentModal");
+    const paymentTableId = document.getElementById("paymentTableId");
+    const paymentAmount = document.getElementById("paymentAmount");
+    const amountPaidInput = document.getElementById("amountPaid2");
+    const closepaymentModal = document.querySelector(".close-btn")
+
+    let selectedTable = null;
+    let actionType = null; // Track the action type (occupied or reserved)
+
+    const tablesData = [
+        { id: "T-01", status: "available" },
+        { id: "T-02", status: "reserved" },
+        { id: "T-03", status: "available" },
+        { id: "T-04", status: "occupied" },
+        { id: "T-05", status: "available" },
+        { id: "T-06", status: "occupied" },
+        { id: "T-07", status: "available" },
+        { id: "T-08", status: "reserved" },
+        { id: "T-09", status: "available" },
+    ];
+
+    // Function to render the table layout
+    const renderTables = () => {
+        tablesLayout.innerHTML = "";
+        tablesData.forEach((table) => {
+            const tableDiv = document.createElement("div");
+            tableDiv.className = `table ${table.status}`;
+            tableDiv.id = table.id;
+            tableDiv.textContent = table.id;
+
+            // Add click event to handle selection
+            tableDiv.addEventListener("click", () => {
+                if (selectedTable) {
+                    selectedTable.classList.remove("selected");
+                }
+                tableDiv.classList.add("selected");
+                selectedTable = tableDiv;
+
+                const tableData = tablesData.find((t) => t.id === table.id);
+                tableStatusDisplay.textContent = tableData.status.charAt(0).toUpperCase() + tableData.status.slice(1);
+
+                updateActionButtons(tableData.status);
+            });
+
+            tablesLayout.appendChild(tableDiv);
+        });
+    };
+
+    // Enable/disable buttons based on the status
+    const updateActionButtons = (status) => {
+        if (status === "available") {
+            makeAvailableBtn.disabled = true;
+            makeOccupiedBtn.disabled = false;
+            reserveTableBtn.disabled = false;
+        } else if (status === "occupied") {
+            makeAvailableBtn.disabled = false;
+            makeOccupiedBtn.disabled = true;
+            reserveTableBtn.disabled = false;
+        } else if (status === "reserved") {
+            makeAvailableBtn.disabled = false;
+            makeOccupiedBtn.disabled = false;
+            reserveTableBtn.disabled = true;
+        }
+    };
+
+    // Change the table status
+    const changeTableStatus = (newStatus) => {
+        const tableId = selectedTable.id;
+        const tableData = tablesData.find((table) => table.id === tableId);
+
+        if (tableData) {
+            tableData.status = newStatus;
+            tableStatusDisplay.textContent = newStatus.charAt(0).toUpperCase() + newStatus.slice(1);
+            renderTables();
+        }
+    };                  
+
+    // Open the payment modal
+    const openPaymentModal = (type) => {
+        if (!selectedTable) {
+            alert("Please select a table first.");
+            return;
+        }
+
+        actionType = type; // Store the action type
+        paymentTableId.textContent = selectedTable.id;
+        paymentAmount.textContent = type === "reserve" ? "500" : "200"; // Set payment amount based on action
+        paymentModal.classList.remove("hidden");
+    };
+
+    // Close the payment modal
+    closepaymentModal.addEventListener('click',() => {
+        paymentModal.classList.add("hidden");
+        amountPaidInput.value = ""; // Clear the input field
+    })
+
+    // Handle payment submission
+    const submitPayment = (event) => {
+        event.preventDefault();
+        const amountPaid = parseFloat(amountPaidInput.value);
+
+        if (actionType === "reserve" && amountPaid < 500) {
+            alert("You must pay at least ₦500 to reserve this table.");
+            return;
+        } else if (actionType === "occupied" && amountPaid < 200) {
+            alert("You must pay at least ₦200 to occupy this table.");
+            return;
+        }
+
+        // Change the table status after successful payment
+        const newStatus = actionType === "reserve" ? "reserved" : "occupied";
+        changeTableStatus(newStatus);
+
+        alert(`Payment successful! Table ${selectedTable.id} is now ${newStatus}.`);
+        closePaymentModal();
+    };
+
+    // Add event listeners to buttons
+    makeAvailableBtn.addEventListener("click", () => changeTableStatus("available"));
+    makeOccupiedBtn.addEventListener("click", () => openPaymentModal("occupied"));
+    reserveTableBtn.addEventListener("click", () => openPaymentModal("reserve"));
+
+    // Handle payment form submission
+    document.getElementById("paymentForm").addEventListener("submit", submitPayment);
+
+    // Initial render
+    renderTables();
+});
+
+
+document.addEventListener("DOMContentLoaded", () => {
+    const EndOfDayModal = document.querySelector(".EndOfDayModal");
+    const OpenModal = document.querySelector(".BtnMainOpenEndDAy")
+    const btnCloseModal = document.querySelector(".btnCloseDay")
+OpenModal.addEventListener('click',()=>{
+    EndOfDayModal.classList.remove("hidden")
+})
+btnCloseModal.addEventListener('click',()=>{
+    EndOfDayModal.classList.add("hidden")
+})
+
+});
+</script>
+{% endblock %}

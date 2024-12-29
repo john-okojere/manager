@@ -19,5 +19,8 @@ class Redirect404Middleware(MiddlewareMixin):
             # Check if the response status code is 404
             if response.status_code == 404:
                 # Redirect to the dashboard page
-                return redirect('arcade_dashboard')
+                if request.user.section.title() == "Arcade":
+                    return redirect('arcade_dashboard')
+                if request.user.section.title() == "Resturant":
+                    return redirect('resturant_dashboard')
         return response

@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     # Installed apps
     'users.apps.UsersConfig',
     'arcade.apps.ArcadeConfig',
+    'Resturant.apps.ResturantConfig',
 
     # Packages
     'crispy_forms',

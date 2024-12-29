@@ -1,0 +1,643 @@
+{% extends 'Resturant/base.html' %}
+{% load static %}
+{% block main_content %}
+<div class="container">
+  <h1>Cashier's Dashboard</h1>
+  <style>
+    /* General Styles */
+.page-wapper{
+    position: relative;
+}
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Heading Styles */
+h1, h2 {
+    text-align: center;
+    color: #444;
+}
+
+/* Table Styles */
+.orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.orders-table th, .orders-table td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.orders-table th {
+    background-color: grey;
+    color: white;
+}
+
+.orders-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.orders-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Button Styles */
+button {
+    cursor: pointer;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.btn-primary {
+    background-color: grey;
+    color: white;
+}
+
+.btn-success {
+    background-color: #28a745;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+.close-btn {
+    color: #dc3545;
+    color: white;
+    padding: 5px 10px;
+    float: right;
+    font-size: 14px;
+    border-radius: 50%;
+}
+
+.close-btn:hover {
+    color: #c82333;
+}
+
+/* Modal Styles */
+.modal {
+    /* display: none; */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    
+    justify-items: center;
+    align-content: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 400px;
+    position: relative;
+}
+
+.modal-content h3 {
+    margin-top: 0;
+    text-align: center;
+    color: #444;
+}
+
+.modal-content form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.modal-content input, 
+.modal-content select {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 100%;
+}
+
+.modal-content button {
+    margin-top: 10px;
+}
+
+/* Utility Classes */
+.hidden {
+    display: none;
+}
+
+.text-center {
+    text-align: center;
+}
+button{
+    margin-bottom: 0 !important;
+}
+  </style>
+  <!-- Orders Section -->
+  <div>
+    <h2>Pending Orders</h2>
+    <table class="orders-table">
+      <thead>
+        <tr>
+          <th>Order ID</th>
+          <th>Waiter</th>
+          <th>Table</th>
+          <th>Total</th>
+          <th>Payment Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="ordersList">
+        {% for sale in orders %}
+        <tr>
+          <td>{{ sale.id }}</td>
+          <td>{{ sale.waiter }}</td>
+          <td>{{ sale.Table_no }}</td>
+          <td>₦{{ sale.total }}</td>
+          <td>{{ sale.paid|yesno:"Paid,Unpaid" }}</td>
+          <td>
+            {% if sale.approved %}
+            <button onclick="printMenu({{ sale.id }})" class="btn btn-success">Print Order</button>
+            {% else %}
+            <button onclick="ApproveOrder({{ sale.id }}, {{ sale.total }})" class="btn btn-success">Approve Order</button>
+            {% endif %}
+            {% if sale.paid %}
+            <button onclick="printReciept({{ sale.id }})" class="btn btn-success">Print Receipt</button>
+            {% else %}
+            <button onclick="processPayment({{ sale.id }}, {{ sale.total }})" class="btn btn-primary">Process Payment</button>
+            {% endif %}
+          </td>
+        </tr>
+        {% empty %}
+        <tr>
+          <td colspan="6">No pending orders</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Payment Modal -->
+  <div id="paymentModal" class="modal hidden">
+    <div class="modal-content">
+      <div>
+        <button class="close-btn" onclick="closePaymentModal()">&times;</button>
+      </div>
+      <h3>Process Payment</h3>
+      <form id="paymentForm">
+    <input type="hidden" id="saleId" name="sale_id">
+    <div>
+        <label>Amount to Pay:</label>
+        <input type="text" id="amountToPay" name="amount" readonly>
+    </div>
+    <div>
+        <label>Payment Type:</label>
+        <select id="paymentType" name="payment_type" required>
+            <option value="cash">Cash</option>
+            <option value="transfer">Transfer</option>
+            <option value="card">Card</option>
+        </select>
+    </div>
+    <div>
+        <label>Paid By:</label>
+        <input type="text" id="paidBy" name="paid_by" required>
+    </div>
+    <button type="submit" class="btn btn-success">Complete Payment</button>
+</form>
+
+    </div>
+  </div>
+</div>
+
+<div id="approvalModal" class="modal hidden">
+    <div class="modal-content">
+      <div>
+        <button class="close-btn" onclick="closeApprovalModal()">&times;</button>
+      </div>
+      <h3>Are you Sure you want to complete order?</h3>
+      <form id="approvalForm">
+    <input type="hidden" id="AsaleId" name="Asale_id">
+    <button type="submit" class="btn btn-success">Approve Order</button>
+</form>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function processPayment(saleId, total) {
+  document.getElementById('saleId').value = saleId;
+  document.getElementById('amountToPay').value = total;
+  document.getElementById('paymentModal').classList.remove('hidden');
+  document.getElementById('paymentModal').style.display = 'block'
+}
+
+function closePaymentModal() {
+  document.getElementById('paymentModal').classList.add('hidden');
+  document.getElementById('paymentModal').style.display = 'none'
+}
+
+function ApproveOrder(saleId, total) {
+  document.getElementById('AsaleId').value = saleId;
+  document.getElementById('approvalModal').classList.remove('hidden');
+  document.getElementById('approvalModal').style.display = 'block'
+}
+
+function closeApprovalModal() {
+  document.getElementById('approvalModal').classList
+  .add('hidden');
+  document.getElementById('approvalModal').style.display = 'none'
+}
+
+// Select modal elements
+const openModalButtons = document.querySelectorAll('[data-modal-target]');
+const closeModalButtons = document.querySelectorAll('[data-close-button]');
+const overlay = document.getElementById('overlay');
+
+// Open modal
+openModalButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        const modal = document.querySelector(button.dataset.modalTarget);
+        openModal(modal);
+    });
+});
+
+// Close modal
+closeModalButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        const modal = button.closest('.modal');
+        closeModal(modal);
+    });
+});
+
+// Close modal when clicking on the overlay
+if (overlay) {
+    overlay.addEventListener('click', () => {
+        const modals = document.querySelectorAll('.modal.active');
+        modals.forEach(modal => {
+            closeModal(modal);
+        });
+    });
+}
+
+function openModal(modal) {
+    if (modal == null) return;
+    modal.classList.add('active');
+    overlay.classList.add('active');
+}
+
+function closeModal(modal) {
+    if (modal == null) return;
+    modal.classList.remove('active');
+    overlay.classList.remove('active');
+}
+// Submit the payment form using AJAX
+document.getElementById('paymentForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    const saleId = document.getElementById('saleId').value;
+    const amount = document.getElementById('amountToPay').value;
+    const paymentType = document.getElementById('paymentType').value;
+    const paidBy = document.getElementById('paidBy').value;
+
+    const csrfToken = getCookie('csrftoken');
+
+    fetch('/restaurant/process-payment/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': csrfToken,
+        },
+        body: new URLSearchParams({
+            sale_id: saleId,
+            amount: amount,
+            payment_type: paymentType,
+            paid_by: paidBy,
+        }),
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                closePaymentModal();
+                printReciept(saleId)
+            } else {
+                alert(`Error: ${data.error}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An unexpected error occurred.');
+        });
+});
+
+document.getElementById('approvalForm').addEventListener('submit', function (event) {
+    event.preventDefault();
+
+    const AsaleId = document.getElementById('AsaleId').value;
+    const csrfToken = getCookie('csrftoken');
+
+    fetch('/restaurant/approve-order/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': csrfToken,
+        },
+        body: new URLSearchParams({
+            Asale_id: AsaleId,
+        }),
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message);
+                closeApprovalModal();
+                location.reload(); // Refresh the page to show updated data
+            } else {
+                alert(`Error: ${data.error}`);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An unexpected error occurred.');
+        });
+});
+
+
+// Function to get CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.startsWith(name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+function printMenu(saleId) {
+    // Send an AJAX request to fetch order details
+    fetch(`/restaurant/get-order-details/${saleId}/`, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest', // Indicate that it's an AJAX request
+            'Content-Type': 'application/json',
+        },
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch order details');
+            }
+            return response.json();
+        })
+        .then(orderDetails => {
+            // Call the print function with the fetched details
+            printOrder(orderDetails);
+        })
+        .catch(error => {
+            console.error('Error fetching order details:', error);
+            alert('Could not fetch order details. Please try again.');
+        });
+}
+
+function printOrder(orderDetails) {
+    // Create a new window for the print-friendly content
+    const printWindow = window.open('', '_blank', 'width=600,height=800');
+
+    // HTML content for the order
+    const content = `
+        <html>
+        <head>
+            <title>Order Receipt</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 20px;
+                    padding: 0;
+                }
+                .order-header {
+                    text-align: center;
+                    margin-bottom: 20px;
+                }
+                .order-header h1 {
+                    margin: 0;
+                }
+                .order-details {
+                    border: 1px solid #ddd;
+                    border-radius: 8px;
+                    padding: 10px;
+                    margin-bottom: 20px;
+                }
+                .order-details table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 10px;
+                }
+                .order-details th, .order-details td {
+                    border: 1px solid #ddd;
+                    padding: 8px;
+                    text-align: left;
+                }
+                .order-details th {
+                    background-color: #f4f4f4;
+                }
+                .footer {
+                    text-align: center;
+                    margin-top: 20px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="order-header">
+                <h1>Kitchen Order</h1>
+                <p>Order ID: ${orderDetails.id}</p>
+                <p>Table: ${orderDetails.tableNumber ? orderDetails.tableNumber : 'Take Away'}</p>
+                <p>Waiter: ${orderDetails.waiter}</p>
+            </div>
+            <div class="order-details">
+                <h2>Order Items</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${orderDetails.items
+                            .map(item => `
+                                <tr>
+                                    <td>${item.name}</td>
+                                    <td>${item.quantity}</td>
+                                    <td>${item.notes || 'None'}</td>
+                                </tr>
+                            `)
+                            .join('')}
+                    </tbody>
+                </table>
+            </div>
+            <div class="footer">
+                <p><strong>Thank you!</strong></p>
+                <p>Generated on: ${new Date().toLocaleString()}</p>
+            </div>
+        </body>
+        </html>
+    `;
+
+    // Write the content to the new window and print it
+    printWindow.document.open();
+    printWindow.document.write(content);
+    printWindow.document.close();
+    printWindow.print();
+}
+function printReciept(saleId) {
+    // Send an AJAX request to fetch receipt details
+    $.ajax({
+    url: `/restaurant/get-receipt-details/${saleId}/`,
+    method: 'GET',
+    headers: {
+        'X-Requested-With': 'XMLHttpRequest', // Indicate that it's an AJAX request
+        'Content-Type': 'application/json',
+    },
+    success: function(receiptDetails) {
+        // Call the print function with the fetched details
+        printReceipt(receiptDetails);
+    },
+    error: function(xhr, status, error) {
+        console.error('Error fetching receipt details:', error);
+        alert('Could not fetch receipt details. Please try again.');
+    }
+});
+}
+
+function printReceipt(receiptDetails) {
+    // Create a new window for the print-friendly receipt content
+    const printWindow = window.open('', '_blank', 'width=600,height=800');
+
+    // HTML content for the receipt
+    const content = `
+        <html>
+        <head>
+            <title>Receipt</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 20px;
+                    padding: 0;
+                }
+                .receipt-header {
+                    text-align: center;
+                    margin-bottom: 20px;
+                }
+                .receipt-header h1 {
+                    margin: 0;
+                }
+                .receipt-details {
+                    border: 1px solid #ddd;
+                    border-radius: 8px;
+                    padding-bottom: 0;
+
+                    padding: 10px;
+                    padding-bottom: 0;
+                    margin-bottom: 0px;
+                }
+                .receipt-details table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 10px;
+                }
+                .receipt-details th, .receipt-details td {
+                    border: 1px solid #ddd;
+                    padding: 8px;
+                    text-align: left;
+                }
+                .receipt-details th {
+                    background-color: #f4f4f4;
+                }
+                .footer {
+                    text-align: center;
+                    margin-top: 5px;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="receipt-header">
+             <h1 style="margin-bottom: 0; padding-bottom: 0;">Eleganté</h1>
+               <strong> <p  style="margin-top: 5px; padding-top: 0; margin-bottom: 0;">Green Velvet Resturant </p></strong>
+             <p  style="margin-top: 5px; padding-top: 0; padding-top: 0; margin-bottom: 0;"> 1,Bria Street Ademola<br> Adetokunbo Crescent <br> Wuse 2, Abuja</p>
+             <p  style="margin-top: 5px; padding-top: 0; padding-top: 0; margin-bottom: 0;">07068686839</p>
+               <p> ${new Date().toLocaleDateString()}</p>
+               <p  style="margin-top: 5px; padding-top: 0; padding-top: 0; margin-bottom: 0;"> ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</p>
+        <p  style="margin-top: 5px; padding-top: 0; padding-top: 0; margin-bottom: 0;">Sale ID: ${receiptDetails.sale_id}</p>
+            </div>
+                <div style="border: 1px solid #000000; margin-top: 10px;"></div>
+            <div class="receipt-details">
+                <table style="width: 50%; margin-left: 0; padding-left: 0;">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${receiptDetails.items
+                            .map(item => `
+                                <tr>
+                                    <td>${item.name}</td>
+                                    <td>${item.quantity}</td>
+                                    <td>₦${item.price}</td>
+                                    <td>₦${(item.quantity * item.price)}</td>
+                                </tr>
+                            `)
+                            .join('')}
+                    </tbody>
+                </table>
+                    <div style="border: 1px solid #000000; margin-top: 10px;"></div>
+
+                <div class="ReciptBottom" style="display: flex; flex-direction: column; align-items: center;">
+       <strong><p style="margin-top: 13px; padding-top: 0; padding-top: 0; margin-bottom: 0;">Total Amount: ₦${receiptDetails.total_amount}</p></strong> 
+        <p style="margin-top: 5px; padding-top: 0; padding-top: 0; margin-bottom: 0;">Payment Type: ${receiptDetails.payment_type}</p>
+        <p style="margin-top: 5px; padding-top: 0; padding-top: 0; margin-bottom: 0;">Paid By: ${receiptDetails.paid_by}</p>
+
+        </div>
+        
+    </div>
+           <div class="footer">
+        <p  style=" font-size: 13px; margin-top: 3px; padding-top: 0; padding-top: 0; margin-bottom: 0;" ><strong>Thank you for your purchase!</strong></p>
+        <i style ="padding: 0; font-size: 13px; margin: 0; line-height: 19px; margin-top: 9px;">Powered by DigiO2 Tech System Ltd</i>
+
+    </div>
+        </body>
+        </html>
+    `;
+
+    // Write the content to the new window and print it
+    printWindow.document.open();
+    printWindow.document.write(content);
+    printWindow.document.close();
+    printWindow.print();
+}
+
+</script>
+{% endblock %}

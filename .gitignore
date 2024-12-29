@@ -5,6 +5,12 @@ arcade/migrations/*
 
 manager/__pycache__/
 
+resturant/__pycache__/
+resturant/migrations/__pycache__/
+resturant/migrations/*
+!resturant/migrations/__init__.py
+
+
 users/__pycache__/
 users/migrations/__pycache__/
 users/migrations/*
