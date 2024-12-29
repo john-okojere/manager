@@ -101,38 +101,18 @@ def face_auth(request):
 
 def choose_section(request):
     user = request.user
-    if user.role == 'Cashier':
-        if user.section == 'arcade':
-            return redirect('arcade_cashier')
-        elif user.section.title() == 'Restaurant':
-            return redirect('resturant_cashier')
-        elif user.section.lower() == 'cosmetic_store':
-            return redirect('beauty_cashier')
-        elif user.section.lower() == 'salon':
-            return redirect('salon_cashier')
-        elif user.section.lower() == 'fashion':
-            return redirect('fashion_cashier')
-        elif user.section.lower() == 'lounge':
-            return redirect('lounge_cashier')
-        elif user.section.lower() == 'spa':
-            return redirect('spa_cashier')
-    elif user.role == "Manager":
-        if user.section == 'arcade':
-            return redirect('arcade_manager')
-        elif user.section.title() == 'Restaurant':
-            return redirect('resturant_dashboard')
-        elif user.section.lower() == 'cosmetic_store':
-            return redirect('beauty_manager')
-        # elif user.section.lower() == 'salon':
-        #     return redirect('salon_manager')
-        # elif user.section.lower() == 'fashion':
-        #     return redirect('fashion_manager')
-        # elif user.section.lower() == 'lounge':
-        #     return redirect('lounge_manager')
-        # elif user.section.lower() == 'spa':
-        #     return redirect('spa_manager')
-    elif user.role == 'Waiter':
-        if user.section.title() == 'Restaurant':
-            return redirect('resturant_waiter')
+
+    if user.section == 'arcade':
+        return redirect('arcade_manager')
+    elif user.section.title() == 'Restaurant':
+        return redirect('resturant_dashboard')
+    # elif user.section.lower() == 'salon':
+    #     return redirect('salon_manager')
+    # elif user.section.lower() == 'fashion':
+    #     return redirect('fashion_manager')
+    # elif user.section.lower() == 'lounge':
+    #     return redirect('lounge_manager')
+    # elif user.section.lower() == 'spa':
+    #     return redirect('spa_manager')
 
     return redirect('/')
