@@ -48,6 +48,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'manager.middleware.Redirect404Middleware',
+    'manager.middleware.RoleBasedLogoutMiddleware',
 ]
 
 ROOT_URLCONF = 'manager.urls'
