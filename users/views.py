@@ -15,10 +15,9 @@ def login_user(request):
                 login(request, user)
                 return redirect('face-auth')  # Redirect to the dashboard
             else:
-                error='You are not a Manager'
+                return render(request, 'users/signin-2.html', {'error': 'You are not a Manager'})
         else:
-            error='You are not a Manager'
-            return render(request, 'users/signin-2.html', {'error': error})
+            return render(request, 'users/signin-2.html', {'error': 'Invalid credentials'})
     return render(request, 'users/signin-2.html')
 
 # User logout view
