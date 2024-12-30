@@ -136,3 +136,8 @@ LOGOUT_URL = '/users/logout/'
 
 # Crispy Forms
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://elegante.sale',
+    'https://www.elegante.sale',
+]
