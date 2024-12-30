@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .container.mt-4{
+        margin: auto;
+        margin-top: 0 !important;
+    }
+.container-with-sidebar {
+    display: flex;
+    min-height: 80vh;
+}
+
+/* Sidebar styles */
+.sidebar {
+    color:black !important ;
+    padding: 1em;
+    overflow-y: auto;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-menu li {
+    margin: 1em 0;
+}
+
+.sidebar-menu a {
+    color: #5B6670;
+    text-decoration: none;
+    display: block;
+    padding: 0.5em 1em;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.sidebar-menu a:hover {
+    color: #d02222;
+}
+
+
+/* Main content area */
+.main-content {
+    flex-grow: 1;
+    background-color: #f4f4f4;
+    min-height: 85%;
+}
+div.dataTables_wrapper div.dataTables_info {
+    padding-top: 68px !important;
+}
+</style>
+<div class="container-with-sidebar" style="display: flex;">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <ul class="sidebar-menu">
+            <li>
+                <h3>Admin Dashboard</h3>
+            </li>
+{% if user.role == "" %}
+  
+{% endif %}            
+            <li><a href="{% url 'arcade_dashboard' %}"><i data-feather="home" style="width:18px; height:18px ;margin-right:10px"></i>Arcade</a></li>
+            <li><a href="{% url 'resturant_dashboard' %}"><i data-feather="home" style="width:18px; height:18px ;margin-right:10px"></i> Resturant</a></li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        {% block main_content %}
+        <!-- This block is for the main content of pages that extend this template -->
+        {% endblock main_content %}
+    </div>
+</div>
+{% endblock %}

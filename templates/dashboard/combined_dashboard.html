@@ -1,0 +1,170 @@
+{% extends "dashboard/base.html" %}
+{% block main_content %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="container mt-5">
+    <h1 class="text-center">Combined Dashboard</h1>
+    
+    <!-- Export Buttons -->
+    <div class="text-center mb-4">
+        <button id="exportPdf" class="btn btn-danger">Export to PDF</button>
+        <button id="exportExcel" class="btn btn-info">Export to Excel</button>
+    </div>
+
+    <!-- Summary Metrics -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary">
+                <div class="card-body text-center">
+                    <h5>Total Restaurant Sales</h5>
+                    <h3>₦{{ restaurant_total_sales }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-success">
+                <div class="card-body text-center">
+                    <h5>Total Arcade Sales</h5>
+                    <h3>₦{{ arcade_total_sales }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-warning">
+                <div class="card-body text-center">
+                    <h5>Total Categories</h5>
+                    <h3>{{ total_categories }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Monthly Sales Growth</h4>
+            <canvas id="monthlySalesChart"></canvas>
+        </div>
+        <div class="col-md-6">
+            <h4>Weekly Sales Growth</h4>
+            <canvas id="weeklySalesChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Detailed Reports Section -->
+    <div class="mt-5">
+        <h3>Top Performing Waiters (Restaurant)</h3>
+        <table id="waiterPerformanceTable" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Waiter</th>
+                    <th>Total Sales</th>
+                    <th>Sales Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for waiter in waiter_sales %}
+                <tr>
+                    <td>{{ waiter.waiter__username }}</td>
+                    <td>₦{{ waiter.total_sales }}</td>
+                    <td>{{ waiter.sales_count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mt-5">
+        <h3>Top Products (Restaurant)</h3>
+        <table id="topProductsTable" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Quantity Sold</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in top_products %}
+                <tr>
+                    <td>{{ product.product__name }}</td>
+                    <td>{{ product.quantity_sold }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Payment Breakdown -->
+    <div class="mt-5">
+        <h3>Payment Breakdown</h3>
+        <table id="paymentBreakdownTable" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Payment Type</th>
+                    <th>Total Amount</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payment_breakdown %}
+                <tr>
+                    <td>{{ payment.payment_type }}</td>
+                    <td>₦{{ payment.total }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Monthly Sales Chart
+    const monthlySalesCtx = document.getElementById('monthlySalesChart').getContext('2d');
+    new Chart(monthlySalesCtx, {
+        type: 'bar',
+        data: {
+            labels: {{ monthly_sales_labels|safe }},
+            datasets: [{
+                label: 'Monthly Sales',
+                data: {{ monthly_sales_values|safe }},
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // Weekly Sales Chart
+    const weeklySalesCtx = document.getElementById('weeklySalesChart').getContext('2d');
+    new Chart(weeklySalesCtx, {
+        type: 'line',
+        data: {
+            labels: {{ sales_chart_labels|safe }},
+            datasets: [{
+                label: 'Weekly Sales',
+                data: {{ sales_chart_values|safe }},
+                borderColor: 'rgba(54, 162, 235, 1)',
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

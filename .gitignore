@@ -16,6 +16,13 @@ users/migrations/__pycache__/
 users/migrations/*
 !users/migrations/__init__.py
 
+
+home/__pycache__/
+home/migrations/__pycache__/
+home/migrations/*
+!home/migrations/__init__.py
+
+
 db.sqlite3
 db.json
 .env
