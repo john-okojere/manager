@@ -421,7 +421,7 @@ def apply_sale_item_discount(request):
 
 
 from django.db.models import Sum
-from django.db.models.functions import TruncDay, TruncWeek
+from django.db.models.functions import TruncDay, TruncWeek, TruncMonth
 from django.core.paginator import Paginator
 from django.core.cache import cache
 from django.db.models import Sum
