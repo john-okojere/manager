@@ -18,9 +18,6 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
         from django.utils.timezone import make_aware
         from datetime import datetime
-
-        # Convert `last_login` string to datetime after fetching user
-        user = authenticate(request, username=username, password=password)
         if user and isinstance(user.last_login, str):
             user.last_login = make_aware(datetime.strptime(user.last_login, "%Y-%m-%d %H:%M:%S"))
         if user is not None:
@@ -30,8 +27,8 @@ def login_user(request):
                     from datetime import datetime
                     from pytz import timezone
                     tz = timezone("Africa/Lagos")
-                    user.profile.last_login = tz.localize(datetime.strptime(user.profile.last_login, "%Y-%m-%dT%H:%M:%S"))
-                    user.profile.save()
+                    user.last_login = tz.localize(datetime.strptime(user.profile.last_login, "%Y-%m-%dT%H:%M:%S"))
+                    user.save()
                     login(request, user)
 
             # Ensure the user object has the required attributes
