@@ -16,7 +16,13 @@ def login_user(request):
             return render(request, 'users/signin-2.html', {'error': 'Please provide both username and password'})
 
         user = authenticate(request, username=username, password=password)
+        from django.utils.timezone import make_aware
+        from datetime import datetime
 
+        # Convert `last_login` string to datetime after fetching user
+        user = authenticate(request, username=username, password=password)
+        if user and isinstance(user.last_login, str):
+            user.last_login = make_aware(datetime.strptime(user.last_login, "%Y-%m-%d %H:%M:%S"))
         if user is not None:
             if user is not None:
                 # Check for datetime-related issues
