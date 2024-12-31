@@ -24,3 +24,18 @@ class Redirect404Middleware(MiddlewareMixin):
                 if request.user.section.title() == "Resturant":
                     return redirect('resturant_dashboard')
         return response
+
+class SectionBasedAccessMiddleware(MiddlewareMixin):
+    def process_request(self, request):
+        # Apply only if the user is authenticated
+        if request.user.is_authenticated:
+            # Check if the user's section is "arcade"
+            if request.user.section.title() == "Arcade":
+                # Allow access only to URLs starting with /arcade/
+                if not request.path.startswith('/arcade/'):
+                    return redirect('resturant_dashboard')
+            if request.user.section.title() == "Resturant":
+                # Allow access only to URLs starting with /resturant/
+                if not request.path.startswith('/resturant/'):
+                    return redirect('resturant_dashboard')
+        return None

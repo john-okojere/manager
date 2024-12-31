@@ -50,6 +50,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'manager.middleware.Redirect404Middleware',
     'manager.middleware.RoleBasedLogoutMiddleware',
+    'manager.middleware.SectionBasedAccessMiddleware',
 ]
 
 ROOT_URLCONF = 'manager.urls'

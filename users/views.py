@@ -5,20 +5,35 @@ from django.contrib.auth.decorators import login_required
 from .forms import  UserUpdateForm
 
 # User login view
+
 def login_user(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+
+        if not username or not password:
+            # Handle empty fields
+            return render(request, 'users/signin-2.html', {'error': 'Please provide both username and password'})
+
         user = authenticate(request, username=username, password=password)
+
         if user is not None:
             login(request, user)
-            if request.user.role == "Manager" or request.user.is_staff or request.user.level >=3:
-                return redirect('face-auth')  # Redirect to the dashboard
+
+            # Ensure the user object has the required attributes
+            user_role = getattr(request.user, 'role', None)
+            user_level = getattr(request.user, 'level', 0)
+
+            if user_role == "Manager" or request.user.is_staff or user_level >= 3:
+                return redirect('face-auth')  # Redirect to the face-auth page
             else:
                 logout(request)
-                return render(request, 'users/signin-2.html', {'error': 'You are not a Manager'})
+                return render(request, 'users/signin-2.html', {'error': 'You are not authorized to access this page'})
         else:
-            return render(request, 'users/signin-2.html', {'error': 'Invalid credentials'})
+            # Invalid credentials
+            return render(request, 'users/signin-2.html', {'error': 'Invalid username or password'})
+
+    # Render the login page for GET requests
     return render(request, 'users/signin-2.html')
 
 # User logout view
