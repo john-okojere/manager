@@ -23,11 +23,11 @@ def login_user(request):
         if user is not None:
             if user is not None:
                 # Check for datetime-related issues
-                if hasattr(user.profile, 'last_login') and isinstance(user.profile.last_login, str):
+                if hasattr(user, 'last_login') and isinstance(user.last_login, str):
                     from datetime import datetime
                     from pytz import timezone
                     tz = timezone("Africa/Lagos")
-                    user.last_login = tz.localize(datetime.strptime(user.profile.last_login, "%Y-%m-%dT%H:%M:%S"))
+                    user.last_login = tz.localize(datetime.strptime(user.last_login, "%Y-%m-%dT%H:%M:%S"))
                     user.save()
                     login(request, user)
 
