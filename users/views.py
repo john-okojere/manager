@@ -18,7 +18,15 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
-            login(request, user)
+            if user is not None:
+                # Check for datetime-related issues
+                if hasattr(user.profile, 'last_login') and isinstance(user.profile.last_login, str):
+                    from datetime import datetime
+                    from pytz import timezone
+                    tz = timezone("Africa/Lagos")
+                    user.profile.last_login = tz.localize(datetime.strptime(user.profile.last_login, "%Y-%m-%dT%H:%M:%S"))
+                    user.profile.save()
+                    login(request, user)
 
             # Ensure the user object has the required attributes
             user_role = getattr(request.user, 'role', None)
