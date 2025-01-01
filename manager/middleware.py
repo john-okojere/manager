@@ -35,8 +35,8 @@ class SectionBasedAccessMiddleware(MiddlewareMixin):
                 if not request.path.startswith('/arcade/'):
                     # return redirect('resturant_dashboard')
                     pass
-            if request.user.section.title() == "Resturant":
-                # Allow access only to URLs starting with /resturant/
-                if not request.path.startswith('/resturant/'):
-                    return redirect('resturant_dashboard')
+            # if request.user.section.title() == "Resturant":
+            #     # Allow access only to URLs starting with /resturant/
+            #     if not request.path.startswith('/resturant/'):
+            #         return redirect('resturant_dashboard')
         return None
