@@ -28,7 +28,7 @@ urlpatterns = [
     path('digi02/', admin.site.urls),
     path('users/', include('users.urls')),
     path('arcade/', include('arcade.urls')),
-    path('resturant/', include('Resturant.urls')),
+    # path('resturant/', include('Resturant.urls')),
     path('', include('home.urls')),
 ]
 
