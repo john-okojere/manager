@@ -131,7 +131,7 @@ def choose_section(request):
     if user.section == 'arcade':
         return redirect('arcade_manager')
     elif user.section.title() == 'Restaurant':
-        return redirect('resturant_dashboard')
+        return redirect('/')
     # elif user.section.lower() == 'salon':
     #     return redirect('salon_manager')
     # elif user.section.lower() == 'fashion':

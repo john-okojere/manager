@@ -21,8 +21,8 @@ class Redirect404Middleware(MiddlewareMixin):
                 # Redirect to the dashboard page
                 if request.user.section.title() == "Arcade":
                     return redirect('arcade_dashboard')
-                if request.user.section.title() == "Resturant":
-                    return redirect('resturant_dashboard')
+                # if request.user.section.title() == "Resturant":
+                #     return redirect('resturant_dashboard')
         return response
 
 class SectionBasedAccessMiddleware(MiddlewareMixin):
@@ -33,7 +33,8 @@ class SectionBasedAccessMiddleware(MiddlewareMixin):
             if request.user.section.title() == "Arcade":
                 # Allow access only to URLs starting with /arcade/
                 if not request.path.startswith('/arcade/'):
-                    return redirect('resturant_dashboard')
+                    # return redirect('resturant_dashboard')
+                    pass
             if request.user.section.title() == "Resturant":
                 # Allow access only to URLs starting with /resturant/
                 if not request.path.startswith('/resturant/'):
