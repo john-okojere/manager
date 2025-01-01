@@ -99,7 +99,7 @@ div.dataTables_wrapper div.dataTables_info {
             
 
             {% if user.role == 'Manager'  or user.level >= 3  %}
-            <!-- <li><a href="{% url 'resturant_dashboard' %}"><i data-feather="bar-chart-2"  style="width:18px; height:18px ;margin-right:10px"></i>dashboard</a></li> -->
+            <!-- <li><a href=""><i data-feather="bar-chart-2"  style="width:18px; height:18px ;margin-right:10px"></i>dashboard</a></li> -->
             <li><a href="{% url 'resturant_manage_approvals' %}"> <i data-feather="box" style="width:18px; height:18px ;margin-right:10px"></i>Manage Approvals</a></li>
             <li><a href="{% url 'resturant_inventory_list' %}"> <i data-feather="box" style="width:18px; height:18px ;margin-right:10px"></i>Inventory</a></li>
             <li><a href="{% url 'resturant_sales_history' %}"> <i data-feather="shopping-cart" style="width:18px; height:18px ;margin-right:10px"></i>Sales</a></li>
