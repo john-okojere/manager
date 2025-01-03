@@ -6,6 +6,12 @@ from .forms import  UserUpdateForm
 
 # User login view
 
+from django.shortcuts import render, redirect
+from django.contrib.auth import authenticate, login, logout
+from django.utils.timezone import make_aware
+from datetime import datetime
+from pytz import timezone
+
 def login_user(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -15,27 +21,29 @@ def login_user(request):
             # Handle empty fields
             return render(request, 'users/signin-2.html', {'error': 'Please provide both username and password'})
 
+        # Authenticate user
         user = authenticate(request, username=username, password=password)
-        from django.utils.timezone import make_aware
-        from datetime import datetime
-        if user and isinstance(user.last_login, str):
-            user.last_login = make_aware(datetime.strptime(user.last_login, "%Y-%m-%d %H:%M:%S"))
-        if user is not None:
-            if user is not None:
-                # Check for datetime-related issues
-                if hasattr(user, 'last_login') and isinstance(user.last_login, str):
-                    from datetime import datetime
-                    from pytz import timezone
+
+        if user:
+            # Check and handle last_login issues
+            if isinstance(user.last_login, str):
+                try:
                     tz = timezone("Africa/Lagos")
                     user.last_login = tz.localize(datetime.strptime(user.last_login, "%Y-%m-%dT%H:%M:%S"))
-                    user.save()
-                    login(request, user)
+                except ValueError:
+                    # Fallback if datetime format is different
+                    user.last_login = make_aware(datetime.now())
+                user.save()
+
+            # Log the user in
+            login(request, user)
 
             # Ensure the user object has the required attributes
-            user_role = getattr(request.user, 'role', None)
-            user_level = getattr(request.user, 'level', 0)
+            user_role = getattr(user, 'role', None)
+            user_level = getattr(user, 'level', 0)
 
-            if user_role == "Manager" or request.user.is_staff or user_level >= 3:
+            # Role and level check
+            if user_role == "Manager" or user.is_staff or user_level >= 3:
                 return redirect('face-auth')  # Redirect to the face-auth page
             else:
                 logout(request)
